@@ -6,7 +6,7 @@
     <title>Monochrome To-Do</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300..700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,26 +15,1262 @@
             -webkit-tap-highlight-color: transparent;
         }
 
+        :root {
+            --black: #000000;
+            --white: #ffffff;
+            --gray-100: #f8f8f8;
+            --gray-200: #eeeeee;
+            --gray-300: #dddddd;
+            --gray-400: #aaaaaa;
+            --gray-500: #777777;
+            --gray-600: #444444;
+            --gray-700: #222222;
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 16px rgba(0, 0, 0, 0.08);
+            --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
         body {
             font-family: 'Fredoka', sans-serif;
-            background-color: #ffffff;
-            color: #000000;
+            background-color: var(--white);
+            color: var(--black);
             line-height: 1.5;
             min-height: 100vh;
             overflow-x: hidden;
+            transition: background-color 0.3s ease;
         }
 
-        /* Login page styles */
+        /* Login Page - Premium Design */
         .login-container {
             display: flex;
             flex-direction: column;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            padding: 24px;
+            background: linear-gradient(135deg, var(--gray-100) 0%, var(--white) 100%);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, var(--gray-200) 0%, transparent 70%);
+            opacity: 0.6;
+            z-index: 0;
+        }
+
+        .login-box {
+            width: 100%;
+            max-width: 360px;
+            background-color: var(--white);
+            border-radius: var(--radius-lg);
+            padding: 40px 32px;
+            text-align: center;
+            box-shadow: var(--shadow-lg);
+            position: relative;
+            z-index: 1;
+            border: 1px solid var(--gray-200);
+            transform: translateY(0);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+        }
+
+        .login-box:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-lg), 0 12px 36px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-logo {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            line-height: 1;
+        }
+
+        .app-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+            background: linear-gradient(90deg, var(--black) 0%, var(--gray-600) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .app-subtitle {
+            font-size: 1rem;
+            font-weight: 400;
+            margin-bottom: 36px;
+            color: var(--gray-500);
+            max-width: 280px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .input-group {
+            margin-bottom: 24px;
+            text-align: left;
+            position: relative;
+        }
+
+        .input-label {
+            display: flex;
+            align-items: center;
+            font-weight: 500;
+            margin-bottom: 10px;
+            font-size: 0.95rem;
+            color: var(--gray-700);
+        }
+
+        .input-label-icon {
+            margin-right: 8px;
+            font-size: 1.1rem;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 18px 20px 18px 48px;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-md);
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            background-color: var(--white);
+            transition: all 0.3s ease;
+            color: var(--black);
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: var(--black);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .input-icon {
+            position: absolute;
+            left: 18px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 1.2rem;
+            color: var(--gray-500);
+            transition: color 0.3s ease;
+        }
+
+        .input-field:focus + .input-icon {
+            color: var(--black);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 18px;
+            background-color: var(--black);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-md);
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+            letter-spacing: 0.5px;
+        }
+
+        .login-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+
+        .login-btn:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            100% {
+                transform: scale(40, 40);
+                opacity: 0;
+            }
+        }
+
+        .login-btn:hover {
+            background-color: var(--gray-700);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .demo-credentials {
+            margin-top: 32px;
             padding: 20px;
+            border-radius: var(--radius-md);
+            font-size: 0.9rem;
+            background-color: var(--gray-100);
+            border: 1px solid var(--gray-200);
+        }
+
+        .demo-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--gray-700);
+        }
+
+        .demo-detail {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 6px;
+            color: var(--gray-600);
+        }
+
+        /* To-Do App Page - Premium Design */
+        .app-container {
+            display: none;
+            flex-direction: column;
+            min-height: 100vh;
             max-width: 100%;
             width: 100%;
+            background-color: var(--white);
         }
+
+        .app-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 20px;
+            background-color: var(--white);
+            box-shadow: var(--shadow-sm);
+            position: sticky;
+            top: 0;
+            z-index: 10;
+            border-bottom: 1px solid var(--gray-200);
+        }
+
+        .user-greeting {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .greeting-text {
+            font-size: 0.9rem;
+            color: var(--gray-500);
+            margin-bottom: 4px;
+        }
+
+        .user-name {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--black);
+        }
+
+        .logout-btn {
+            padding: 12px 20px;
+            background-color: var(--white);
+            color: var(--black);
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logout-btn:hover {
+            background-color: var(--gray-100);
+            border-color: var(--gray-400);
+        }
+
+        .todo-main {
+            flex: 1;
+            padding: 20px 20px 100px;
+            overflow-y: auto;
+            background-color: var(--gray-100);
+        }
+
+        .stats-container {
+            display: flex;
+            justify-content: space-between;
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            padding: 20px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+
+        .stat-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+
+        .stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--black);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            font-weight: 500;
+        }
+
+        .add-todo-container {
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            margin-bottom: 28px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+
+        .add-todo-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 18px;
+            color: var(--black);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .add-todo-form {
+            display: flex;
+            gap: 12px;
+        }
+
+        .add-todo-input {
+            flex: 1;
+            padding: 18px 20px;
+            border: 2px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .add-todo-input:focus {
+            outline: none;
+            border-color: var(--black);
+            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
+        }
+
+        .add-todo-btn {
+            padding: 18px 24px;
+            background-color: var(--black);
+            color: var(--white);
+            border: none;
+            border-radius: var(--radius-sm);
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+        }
+
+        .add-todo-btn:hover {
+            background-color: var(--gray-700);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .todos-container {
+            background-color: var(--white);
+            border-radius: var(--radius-md);
+            padding: 24px;
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--gray-200);
+        }
+
+        .todos-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .todos-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: var(--black);
+        }
+
+        .filter-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .filter-btn {
+            padding: 8px 14px;
+            background-color: var(--gray-100);
+            color: var(--gray-600);
+            border: 1px solid var(--gray-300);
+            border-radius: var(--radius-sm);
+            font-family: 'Fredoka', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .filter-btn.active {
+            background-color: var(--black);
+            color: var(--white);
+            border-color: var(--black);
+        }
+
+        .todo-list {
+            list-style-type: none;
+        }
+
+        .todo-item {
+            display: flex;
+            align-items: center;
+            padding: 20px;
+            margin-bottom: 12px;
+            border-radius: var(--radius-sm);
+            background-color: var(--white);
+            border: 1px solid var(--gray-200);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .todo-item:hover {
+            border-color: var(--gray-400);
+            box-shadow: var(--shadow-sm);
+            transform: translateY(-2px);
+        }
+
+        .todo-item.completed {
+            background-color: var(--gray-100);
+            opacity: 0.9;
+        }
+
+        .todo-checkbox {
+            margin-right: 16px;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            border: 2px solid var(--gray-400);
+            appearance: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .todo-checkbox:checked {
+            background-color: var(--black);
+            border-color: var(--black);
+        }
+
+        .todo-checkbox:checked::after {
+            content: '✓';
+            color: var(--white);
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .todo-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .todo-text {
+            font-size: 1.05rem;
+            word-break: break-word;
+            padding-right: 10px;
+            transition: all 0.3s ease;
+        }
+
+        .todo-item.completed .todo-text {
+            text-decoration: line-through;
+            color: var(--gray-500);
+        }
+
+        .todo-date {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+            margin-top: 6px;
+        }
+
+        .todo-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .todo-action-btn {
+            background: none;
+            border: none;
+            font-size: 1.2rem;
+            cursor: pointer;
+            color: var(--gray-400);
+            padding: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+
+        .todo-action-btn:hover {
+            color: var(--black);
+            background-color: var(--gray-200);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--gray-400);
+        }
+
+        .empty-state-icon {
+            font-size: 3.5rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .empty-state-text {
+            font-size: 1.1rem;
+            margin-bottom: 12px;
+            color: var(--gray-500);
+        }
+
+        .empty-state-subtext {
+            font-size: 0.9rem;
+            color: var(--gray-400);
+        }
+
+        /* Floating Action Button */
+        .fab-container {
+            position: fixed;
+            bottom: 30px;
+            right: 20px;
+            z-index: 100;
+        }
+
+        .fab {
+            width: 60px;
+            height: 60px;
+            background-color: var(--black);
+            color: var(--white);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            box-shadow: var(--shadow-lg);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+
+        .fab:hover {
+            transform: scale(1.1) rotate(90deg);
+            box-shadow: var(--shadow-lg), 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Responsive styles for mobile only */
+        @media (max-width: 480px) {
+            .login-box {
+                padding: 36px 28px;
+                max-width: 340px;
+            }
+
+            .app-title {
+                font-size: 2.2rem;
+            }
+
+            .add-todo-form {
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .add-todo-btn {
+                padding: 16px;
+                justify-content: center;
+            }
+
+            .stats-container {
+                padding: 16px;
+            }
+
+            .stat-value {
+                font-size: 1.6rem;
+            }
+        }
+
+        /* Hide on non-mobile devices */
+        @media (min-width: 768px) {
+            body::before {
+                content: "📱 This app is designed for mobile devices only. Please view on a smaller screen or use mobile emulation in dev tools.";
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background-color: var(--white);
+                color: var(--black);
+                font-size: 1.5rem;
+                text-align: center;
+                padding: 40px;
+                z-index: 1000;
+                font-family: 'Fredoka', sans-serif;
+                line-height: 1.6;
+            }
+            
+            .login-container, .app-container {
+                display: none !important;
+            }
+        }
+
+        /* Animation for page transitions */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        /* Animation for todo items */
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .todo-item {
+            animation: slideIn 0.3s ease forwards;
+        }
+    </style>
+</head>
+<body>
+    <!-- Login Page -->
+    <div class="login-container" id="loginPage">
+        <div class="login-box fade-in">
+            <div class="app-logo">✓</div>
+            <h1 class="app-title">TaskFlow</h1>
+            <p class="app-subtitle">Organize your tasks with minimal design and maximum efficiency</p>
+            
+            <form id="loginForm">
+                <div class="input-group">
+                    <div class="input-label">
+                        <span class="input-label-icon">👤</span>
+                        Username
+                    </div>
+                    <input type="text" class="input-field" id="username" placeholder="Enter your username" required>
+                    <div class="input-icon">👤</div>
+                </div>
+                
+                <div class="input-group">
+                    <div class="input-label">
+                        <span class="input-label-icon">🔒</span>
+                        Password
+                    </div>
+                    <input type="password" class="input-field" id="password" placeholder="Enter your password" required>
+                    <div class="input-icon">🔒</div>
+                </div>
+                
+                <div id="loginError" style="color: #ff3333; font-size: 0.9rem; margin-bottom: 20px; display: none; padding: 12px; background-color: #fff5f5; border-radius: var(--radius-sm); border: 1px solid #ffdddd;">
+                    ❌ Invalid username or password. Please try again.
+                </div>
+                
+                <button type="submit" class="login-btn">
+                    <span>Login to Continue</span>
+                </button>
+            </form>
+            
+            <div class="demo-credentials fade-in" style="animation-delay: 0.2s;">
+                <div class="demo-title">Demo Credentials</div>
+                <div class="demo-detail">
+                    <span>Username:</span>
+                    <span><strong>user</strong></span>
+                </div>
+                <div class="demo-detail">
+                    <span>Password:</span>
+                    <span><strong>todo123</strong></span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- To-Do App Page -->
+    <div class="app-container" id="appPage">
+        <header class="app-header">
+            <div class="user-greeting">
+                <div class="greeting-text">Welcome back,</div>
+                <div class="user-name" id="userName">User</div>
+            </div>
+            <button class="logout-btn" id="logoutBtn">
+                <span>🚪</span>
+                <span>Logout</span>
+            </button>
+        </header>
+        
+        <main class="todo-main">
+            <div class="stats-container fade-in">
+                <div class="stat-item">
+                    <div class="stat-value" id="totalTasks">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="completedTasks">0</div>
+                    <div class="stat-label">Done</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="pendingTasks">0</div>
+                    <div class="stat-label">Pending</div>
+                </div>
+            </div>
+            
+            <div class="add-todo-container fade-in" style="animation-delay: 0.1s;">
+                <div class="add-todo-title">
+                    <span>➕</span>
+                    <span>Add New Task</span>
+                </div>
+                <form class="add-todo-form" id="addTodoForm">
+                    <input type="text" class="add-todo-input" id="todoInput" placeholder="What needs to be done?" required>
+                    <button type="submit" class="add-todo-btn">
+                        <span>➕</span>
+                        <span>Add</span>
+                    </button>
+                </form>
+            </div>
+            
+            <div class="todos-container fade-in" style="animation-delay: 0.2s;">
+                <div class="todos-header">
+                    <h2 class="todos-title">Your Tasks</h2>
+                    <div class="filter-buttons">
+                        <button class="filter-btn active" data-filter="all">All</button>
+                        <button class="filter-btn" data-filter="pending">Pending</button>
+                        <button class="filter-btn" data-filter="completed">Completed</button>
+                    </div>
+                </div>
+                
+                <div id="emptyState" class="empty-state">
+                    <div class="empty-state-icon">📋</div>
+                    <p class="empty-state-text">No tasks yet</p>
+                    <p class="empty-state-subtext">Add a task using the form above</p>
+                </div>
+                
+                <ul class="todo-list" id="todoList">
+                    <!-- To-do items will be added here dynamically -->
+                </ul>
+            </div>
+        </main>
+        
+        <div class="fab-container">
+            <button class="fab" id="fabButton">
+                <span>+</span>
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // DOM Elements
+        const loginPage = document.getElementById('loginPage');
+        const appPage = document.getElementById('appPage');
+        const loginForm = document.getElementById('loginForm');
+        const usernameInput = document.getElementById('username');
+        const passwordInput = document.getElementById('password');
+        const loginError = document.getElementById('loginError');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const addTodoForm = document.getElementById('addTodoForm');
+        const todoInput = document.getElementById('todoInput');
+        const todoList = document.getElementById('todoList');
+        const emptyState = document.getElementById('emptyState');
+        const fabButton = document.getElementById('fabButton');
+        const userNameElement = document.getElementById('userName');
+        const totalTasksElement = document.getElementById('totalTasks');
+        const completedTasksElement = document.getElementById('completedTasks');
+        const pendingTasksElement = document.getElementById('pendingTasks');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+
+        // Demo credentials
+        const DEMO_USER = 'user';
+        const DEMO_PASS = 'todo123';
+
+        // Current filter state
+        let currentFilter = 'all';
+        let currentUsername = '';
+
+        // Check if user is already logged in
+        document.addEventListener('DOMContentLoaded', () => {
+            const isLoggedIn = localStorage.getItem('todoAppLoggedIn');
+            const savedTodos = localStorage.getItem('todoAppTasks');
+            const savedUsername = localStorage.getItem('todoAppUsername');
+            
+            if (isLoggedIn === 'true' && savedUsername) {
+                currentUsername = savedUsername;
+                userNameElement.textContent = savedUsername.charAt(0).toUpperCase() + savedUsername.slice(1);
+                showAppPage();
+                
+                // Load saved todos
+                if (savedTodos) {
+                    const todos = JSON.parse(savedTodos);
+                    renderTodos(todos);
+                    updateStats(todos);
+                }
+            } else {
+                showLoginPage();
+            }
+        });
+
+        // Show login page
+        function showLoginPage() {
+            loginPage.style.display = 'flex';
+            appPage.style.display = 'none';
+            loginForm.reset();
+            loginError.style.display = 'none';
+            
+            // Add fade-in animation
+            const loginBox = document.querySelector('.login-box');
+            loginBox.classList.remove('fade-in');
+            void loginBox.offsetWidth; // Trigger reflow
+            loginBox.classList.add('fade-in');
+        }
+
+        // Show app page
+        function showAppPage() {
+            loginPage.style.display = 'none';
+            appPage.style.display = 'flex';
+            
+            // Add fade-in animation to elements
+            const fadeElements = document.querySelectorAll('.fade-in');
+            fadeElements.forEach((el, index) => {
+                el.style.animationDelay = `${index * 0.1}s`;
+                el.classList.remove('fade-in');
+                void el.offsetWidth; // Trigger reflow
+                el.classList.add('fade-in');
+            });
+            
+            // Focus on input field
+            setTimeout(() => {
+                todoInput.focus();
+            }, 300);
+        }
+
+        // Login form submission
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const username = usernameInput.value.trim();
+            const password = passwordInput.value.trim();
+            
+            // Simple validation
+            if (username === DEMO_USER && password === DEMO_PASS) {
+                // Successful login
+                localStorage.setItem('todoAppLoggedIn', 'true');
+                localStorage.setItem('todoAppUsername', username);
+                currentUsername = username;
+                userNameElement.textContent = username.charAt(0).toUpperCase() + username.slice(1);
+                showAppPage();
+                
+                // Initialize with sample todos if first time
+                const todos = getTodos();
+                if (todos.length === 0) {
+                    initializeSampleTodos();
+                }
+            } else {
+                // Failed login with animation
+                loginError.style.display = 'block';
+                loginForm.classList.add('shake');
+                setTimeout(() => {
+                    loginForm.classList.remove('shake');
+                }, 500);
+                
+                passwordInput.value = '';
+                passwordInput.focus();
+            }
+        });
+
+        // Add shake animation for login error
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes shake {
+                0%, 100% { transform: translateX(0); }
+                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+                20%, 40%, 60%, 80% { transform: translateX(5px); }
+            }
+            .shake {
+                animation: shake 0.5s ease-in-out;
+            }
+        `;
+        document.head.appendChild(style);
+
+        // Logout functionality
+        logoutBtn.addEventListener('click', () => {
+            localStorage.removeItem('todoAppLoggedIn');
+            localStorage.removeItem('todoAppUsername');
+            showLoginPage();
+        });
+
+        // Get todos from localStorage
+        function getTodos() {
+            const todos = localStorage.getItem('todoAppTasks');
+            return todos ? JSON.parse(todos) : [];
+        }
+
+        // Save todos to localStorage
+        function saveTodos(todos) {
+            localStorage.setItem('todoAppTasks', JSON.stringify(todos));
+        }
+
+        // Update stats
+        function updateStats(todos) {
+            const total = todos.length;
+            const completed = todos.filter(todo => todo.completed).length;
+            const pending = total - completed;
+            
+            totalTasksElement.textContent = total;
+            completedTasksElement.textContent = completed;
+            pendingTasksElement.textContent = pending;
+        }
+
+        // Filter todos based on current filter
+        function filterTodos(todos) {
+            if (currentFilter === 'all') return todos;
+            if (currentFilter === 'pending') return todos.filter(todo => !todo.completed);
+            if (currentFilter === 'completed') return todos.filter(todo => todo.completed);
+            return todos;
+        }
+
+        // Render todos to the UI
+        function renderTodos(todos) {
+            // Clear the current list
+            todoList.innerHTML = '';
+            
+            // Filter todos
+            const filteredTodos = filterTodos(todos);
+            
+            // If no todos, show empty state
+            if (filteredTodos.length === 0) {
+                emptyState.style.display = 'block';
+                return;
+            }
+            
+            // Hide empty state
+            emptyState.style.display = 'none';
+            
+            // Render each todo item
+            filteredTodos.forEach((todo, index) => {
+                // Find the original index in the todos array
+                const originalIndex = todos.findIndex(t => t.id === todo.id);
+                
+                const todoItem = document.createElement('li');
+                todoItem.className = `todo-item ${todo.completed ? 'completed' : ''}`;
+                todoItem.style.animationDelay = `${index * 0.05}s`;
+                
+                // Format date
+                const date = new Date(todo.createdAt);
+                const formattedDate = date.toLocaleDateString('en-US', { 
+                    month: 'short', 
+                    day: 'numeric',
+                    year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
+                });
+                
+                todoItem.innerHTML = `
+                    <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
+                    <div class="todo-content">
+                        <span class="todo-text">${todo.text}</span>
+                        <span class="todo-date">${formattedDate}</span>
+                    </div>
+                    <div class="todo-actions">
+                        <button class="todo-action-btn delete-btn" title="Delete">
+                            🗑️
+                        </button>
+                    </div>
+                `;
+                
+                todoList.appendChild(todoItem);
+                
+                // Add event listener to checkbox
+                const checkbox = todoItem.querySelector('.todo-checkbox');
+                checkbox.addEventListener('change', () => toggleTodoComplete(todo.id));
+                
+                // Add event listener to delete button
+                const deleteBtn = todoItem.querySelector('.delete-btn');
+                deleteBtn.addEventListener('click', () => deleteTodo(todo.id));
+            });
+            
+            // Update stats
+            updateStats(todos);
+        }
+
+        // Initialize with sample todos
+        function initializeSampleTodos() {
+            const sampleTodos = [
+                {
+                    id: generateId(),
+                    text: 'Welcome to TaskFlow!',
+                    completed: false,
+                    createdAt: new Date().toISOString()
+                },
+                {
+                    id: generateId(),
+                    text: 'Tap the checkbox to complete a task',
+                    completed: true,
+                    createdAt: new Date(Date.now() - 86400000).toISOString()
+                },
+                {
+                    id: generateId(),
+                    text: 'Swipe or use the delete button to remove tasks',
+                    completed: false,
+                    createdAt: new Date(Date.now() - 172800000).toISOString()
+                },
+                {
+                    id: generateId(),
+                    text: 'Use the filter buttons to view pending or completed tasks',
+                    completed: false,
+                    createdAt: new Date(Date.now() - 259200000).toISOString()
+                }
+            ];
+            
+            saveTodos(sampleTodos);
+            renderTodos(sampleTodos);
+            updateStats(sampleTodos);
+        }
+
+        // Generate unique ID
+        function generateId() {
+            return Date.now().toString(36) + Math.random().toString(36).substr(2);
+        }
+
+        // Add new todo
+        addTodoForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const text = todoInput.value.trim();
+            if (text === '') return;
+            
+            const todos = getTodos();
+            const newTodo = {
+                id: generateId(),
+                text,
+                completed: false,
+                createdAt: new Date().toISOString()
+            };
+            
+            todos.unshift(newTodo); // Add to beginning
+            saveTodos(todos);
+            renderTodos(todos);
+            
+            // Clear input and focus
+            todoInput.value = '';
+            todoInput.focus();
+            
+            // Show feedback
+            showNotification('Task added successfully!');
+        });
+
+        // FAB button click
+        fabButton.addEventListener('click', () => {
+            todoInput.focus();
+            // Smooth scroll to input
+            document.querySelector('.add-todo-container').scrollIntoView({ 
+                behavior: 'smooth',
+                block: 'center'
+            });
+        });
+
+        // Toggle todo completion
+        function toggleTodoComplete(id) {
+            const todos = getTodos();
+            const todoIndex = todos.findIndex(todo => todo.id === id);
+            
+            if (todoIndex !== -1) {
+                todos[todoIndex].completed = !todos[todoIndex].completed;
+                saveTodos(todos);
+                renderTodos(todos);
+                
+                // Show feedback
+                const status = todos[todoIndex].completed ? 'completed' : 'marked as pending';
+                showNotification(`Task ${status}!`);
+            }
+        }
+
+        // Delete todo
+        function deleteTodo(id) {
+            const todos = getTodos();
+            const todoIndex = todos.findIndex(todo => todo.id === id);
+            
+            if (todoIndex !== -1) {
+                // Remove with animation
+                const todoItem = document.querySelector(`[data-id="${id}"]`);
+                if (todoItem) {
+                    todoItem.style.transform = 'translateX(100%)';
+                    todoItem.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        todos.splice(todoIndex, 1);
+                        saveTodos(todos);
+                        renderTodos(todos);
+                        showNotification('Task deleted!');
+                    }, 300);
+                } else {
+                    todos.splice(todoIndex, 1);
+                    saveTodos(todos);
+                    renderTodos(todos);
+                    showNotification('Task deleted!');
+                }
+            }
+        }
+
+        // Filter button click handlers
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Update active button
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // Update filter and re-render
+                currentFilter = button.dataset.filter;
+                const todos = getTodos();
+                renderTodos(todos);
+            });
+        });
+
+        // Show notification
+        function showNotification(message) {
+            // Remove existing notification
+            const existingNotification = document.getElementById('customNotification');
+            if (existingNotification) {
+                existingNotification.remove();
+            }
+            
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.id = 'customNotification';
+            notification.textContent = message;
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background-color: var(--black);
+                color: var(--white);
+                padding: 14px 24px;
+                border-radius: var(--radius-md);
+                font-weight: 500;
+                z-index: 1000;
+                box-shadow: var(--shadow-lg);
+                animation: slideDown 0.3s ease forwards;
+            `;
+            
+            // Add animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideDown {
+                    from { top: -50px; opacity: 0; }
+                    to { top: 20px; opacity: 1; }
+                }
+                @keyframes slideUp {
+                    from { top: 20px; opacity: 1; }
+                    to { top: -50px; opacity: 0; }
+                }
+            `;
+            document.head.appendChild(style);
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideUp 0.3s ease forwards';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 300);
+            }, 3000);
+        }
+
+        // Initialize on load
+        window.addEventListener('load', () => {
+            // Add data-id attributes for swipe detection
+            setTimeout(() => {
+                const todos = getTodos();
+                if (todos.length === 0 && localStorage.getItem('todoAppLoggedIn') === 'true') {
+                    initializeSampleTodos();
+                }
+            }, 500);
+        });
+
+        // Add swipe to delete functionality for mobile
+        let touchStartX = 0;
+        let touchEndX = 0;
+
+        document.addEventListener('touchstart', e => {
+            touchStartX = e.changedTouches[0].screenX;
+        }, false);
+
+        document.addEventListener('touchend', e => {
+            touchEndX = e.changedTouches[0].screenX;
+            handleSwipe();
+        }, false);
+
+        function handleSwipe() {
+            const swipeThreshold = 100;
+            const swipeDistance = touchEndX - touchStartX;
+            
+            // Left swipe (negative)
+            if (swipeDistance < -swipeThreshold) {
+                // Find the todo item that was swiped
+                const swipedElement = document.elementFromPoint(touchEndX, touchEndY);
+                const todoItem = swipedElement.closest('.todo-item');
+                
+                if (todoItem) {
+                    // Get the todo ID from the delete button
+                    const deleteBtn = todoItem.querySelector('.delete-btn');
+                    if (deleteBtn) {
+                        // Trigger delete
+                        const todoId = deleteBtn.dataset.id;
+                        if (todoId) {
+                            deleteTodo(todoId);
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</body>
+</html>        }
 
         .login-box {
             width: 100%;
