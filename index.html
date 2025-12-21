@@ -1,2271 +1,422 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Arpit Pandey - Portfolio</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ghost Writer</title>
+
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#ffffff">
+
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cpath fill='%235f6ad4' d='M256 48C141.1 48 48 141.1 48 256v160c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32v-32h224v32c0 17.7 14.3 32 32 32h32c17.7 0 32-14.3 32-32V256C464 141.1 370.9 48 256 48zM176 256c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48zm160 0c-26.5 0-48-21.5-48-48s21.5-48 48-48 48 21.5 48 48-21.5 48-48 48z'/%3E%3C/svg%3E">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cutive+Mono&family=Fredoka:wght@400;500;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Nunito:wght@300;400;700&family=Patrick+Hand&family=Quicksand:wght@500;700&display=swap"
+        rel="stylesheet">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
-    <style>
-        /* --- CSS Variables & Theming --- */
-        :root {
-            /* Light Theme Defaults */
-            --bg-body: #f3f4f8;
-            --bg-card: #ffffff;
-            --text-primary: #1e1e2f;
-            --text-secondary: #666666;
-            --primary-gradient: linear-gradient(135deg, #4c40bf, #2a2a72);
-            --accent-blue: #5856d6;
-            --accent-light: #eef1ff;
-            --shadow: 0 10px 30px rgba(0,0,0,0.08);
-            --border-radius: 20px;
-            --icon-bg: #f0f2f5;
-        }
 
-        [data-theme="dark"] {
-            /* Dark Theme Overrides */
-            --bg-body: #121212;
-            --bg-card: #1e1e1e;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0a0;
-            --accent-light: #2a2a35; /* Darker version of tags */
-            --shadow: 0 10px 30px rgba(0,0,0,0.5);
-            --icon-bg: #2c2c2c;
-        }
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Poppins', sans-serif;
-        }
+    <link rel="stylesheet" href="style.css">
 
-        body {
-            background-color: var(--bg-body);
-            color: var(--text-primary);
-            transition: background-color 0.3s, color 0.3s;
-            min-height: 100dvh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            padding-bottom: 2rem;
-        }
-
-        /* --- Layout Container --- */
-        .main-wrapper {
-            width: 100%;
-            /* Mobile padding using dynamic viewport width */
-            padding: 2dvh 4dvw; 
-            /* Desktop constraint */
-            max-width: 1200px;
-            display: flex;
-            flex-direction: column;
-            gap: 2rem;
-        }
-
-        /* --- Theme Toggle --- */
-        .theme-toggle {
-            position: absolute;
-            top: 2rem;
-            right: 2rem;
-            background: var(--bg-card);
-            border: none;
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            cursor: pointer;
-            box-shadow: var(--shadow);
-            display: grid;
-            place-items: center;
-            color: var(--text-primary);
-            z-index: 100;
-        }
-
-        /* --- Profile Header --- */
-        .profile-header {
-            background: var(--primary-gradient);
-            border-radius: var(--border-radius);
-            padding: 3rem 2rem;
-            text-align: center;
-            color: white;
-            box-shadow: 0 15px 40px rgba(76, 64, 191, 0.4);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .avatar-container {
-            width: 100px;
-            height: 100px;
-            background: white;
-            border-radius: 50%;
-            margin: 0 auto 1rem;
-            overflow: hidden;
-            border: 4px solid rgba(255,255,255,0.2);
-            display: grid;
-            place-items: center;
-        }
-        
-        .avatar-container img {
-            width: 100%;
-            height: auto;
-        }
-
-        .profile-header h1 {
-            font-size: 1.5rem;
-            margin-bottom: 0.2rem;
-        }
-
-        .profile-header p {
-            font-size: 0.9rem;
-            opacity: 0.9;
-            margin-bottom: 1.5rem;
-        }
-
-        .social-links {
-            display: flex;
-            justify-content: center;
-            gap: 1rem;
-        }
-
-        .social-btn {
-            background: white;
-            width: 40px;
-            height: 40px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #4c40bf;
-            text-decoration: none;
-            font-size: 1.2rem;
-            transition: transform 0.2s;
-        }
-
-        .social-btn:hover {
-            transform: translateY(-3px);
-        }
-
-        /* --- Sections General --- */
-        .section-title {
-            text-align: center;
-            font-size: 1.2rem;
-            font-weight: 700;
-            margin-bottom: 1.5rem;
-        }
-
-        /* --- Skills Grid --- */
-        .skills-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 1rem;
-        }
-
-        .skill-card {
-            background: var(--bg-card);
-            padding: 1.5rem 0.5rem;
-            border-radius: 16px;
-            text-align: center;
-            box-shadow: var(--shadow);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: background 0.3s;
-        }
-
-        .skill-card i {
-            font-size: 1.8rem;
-            color: var(--accent-blue);
-        }
-
-        .skill-card span {
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        /* --- Projects Grid (Bento Layout) --- */
-        .projects-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .project-card {
-            background: #eef1ff; /* Light bluish tint from image */
-            border-radius: var(--border-radius);
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            min-height: 180px;
-            position: relative;
-        }
-
-        /* Dark mode adjustment for specific project card backgrounds */
-        [data-theme="dark"] .project-card {
-            background: #252530;
-        }
-
-        .project-card.full-width {
-            grid-column: span 2;
-        }
-
-        .project-number {
-            background: white;
-            color: var(--accent-blue);
-            width: 30px;
-            height: 30px;
-            border-radius: 50%;
-            display: grid;
-            place-items: center;
-            font-weight: 700;
-            font-size: 0.9rem;
-            margin-bottom: 1rem;
-        }
-        
-        [data-theme="dark"] .project-number {
-            background: var(--bg-card);
-        }
-
-        .project-card h3 {
-            font-size: 1rem;
-            margin-bottom: 1rem;
-            line-height: 1.3;
-        }
-
-        .tags {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 0.5rem;
-        }
-
-        .tag {
-            background: white;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 0.65rem;
-            font-weight: 600;
-            color: #333;
-        }
-
-        [data-theme="dark"] .tag {
-            background: var(--bg-body);
-            color: var(--text-primary);
-        }
-
-        .load-more-btn {
-            width: 100%;
-            background: var(--accent-blue);
-            color: white;
-            border: none;
-            padding: 1rem;
-            border-radius: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            box-shadow: 0 4px 15px rgba(88, 86, 214, 0.3);
-            margin-top: 1rem;
-        }
-
-        /* --- CTA Section --- */
-        .cta-section {
-            background: var(--primary-gradient);
-            border-radius: var(--border-radius);
-            padding: 2.5rem 2rem;
-            text-align: center;
-            color: white;
-            box-shadow: var(--shadow);
-            margin-top: 1rem;
-        }
-
-        .cta-section h2 {
-            margin-bottom: 1rem;
-        }
-
-        .cta-section p {
-            font-size: 0.85rem;
-            opacity: 0.9;
-            margin-bottom: 2rem;
-            line-height: 1.6;
-        }
-
-        .cta-buttons {
-            display: flex;
-            gap: 1rem;
-            justify-content: center;
-        }
-
-        .btn {
-            padding: 0.8rem 1.5rem;
-            border-radius: 30px;
-            font-size: 0.9rem;
-            font-weight: 600;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: transform 0.2s;
-        }
-
-        .btn-white {
-            background: white;
-            color: var(--accent-blue);
-        }
-
-        .btn-outline {
-            background: rgba(255,255,255,0.1);
-            border: 1px solid rgba(255,255,255,0.3);
-            color: white;
-        }
-
-        .btn:hover {
-            transform: scale(1.05);
-        }
-
-        .copyright {
-            margin-top: 2rem;
-            font-size: 0.75rem;
-            color: var(--text-secondary);
-        }
-
-        /* --- Media Queries for Desktop --- */
-        @media (min-width: 768px) {
-            .main-wrapper {
-                padding: 4rem 2rem;
-            }
-
-            .skills-grid {
-                grid-template-columns: repeat(6, 1fr);
-            }
-
-            .projects-grid {
-                grid-template-columns: repeat(4, 1fr);
-            }
-            
-            /* On desktop, make "full width" cards span 2 out of 4 columns, 
-               or adjust layout. Here I keep the logic consistent with the image 
-               visual but scale it up. */
-            
-            /* Re-mapping for a cleaner desktop look:
-               Row 1: Card 1 (2 cols), Card 2 (1 col), Card 3 (1 col)
-               Row 2: Card 4 (2 cols) ...
-            */
-            
-            .project-card.full-width {
-                grid-column: span 2;
-            }
-        }
-    </style>
 </head>
+
 <body>
-
-    <button class="theme-toggle" onclick="toggleTheme()" aria-label="Toggle Dark Mode">
-        <i class="fas fa-moon"></i>
-    </button>
-
-    <div class="main-wrapper">
-        
-        <header class="profile-header">
-            <div class="avatar-container">
-                <img src="https://api.dicebear.com/7.x/pixel-art/svg?seed=Arpit" alt="Avatar">
-            </div>
-            <h1>Arpit Pandey</h1>
-            <p>Frontend Developer</p>
-            
-            <div class="social-links">
-                <a href="#" class="social-btn"><i class="fab fa-github"></i></a>
-                <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
-                <a href="#" class="social-btn"><i class="fab fa-telegram-plane"></i></a>
-                <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
-            </div>
-        </header>
-
-        <section>
-            <h2 class="section-title">Technical Skills</h2>
-            <div class="skills-grid">
-                <div class="skill-card">
-                    <i class="fab fa-html5"></i>
-                    <span>HTML5</span>
-                </div>
-                <div class="skill-card">
-                    <i class="fab fa-css3-alt"></i>
-                    <span>CSS3</span>
-                </div>
-                <div class="skill-card">
-                    <i class="fab fa-js"></i>
-                    <span>JavaScript</span>
-                </div>
-                <div class="skill-card">
-                    <i class="fab fa-react"></i>
-                    <span>React</span>
-                </div>
-                <div class="skill-card">
-                    <i class="fab fa-node-js"></i>
-                    <span>Node.js</span>
-                </div>
-                <div class="skill-card">
-                    <i class="fas fa-database"></i>
-                    <span>MongoDB</span>
-                </div>
-            </div>
-        </section>
-
-        <section>
-            <h2 class="section-title">My Projects</h2>
-            <div class="projects-grid">
-                
-                <div class="project-card full-width">
-                    <div>
-                        <div class="project-number">1</div>
-                        <h3>E-Life Platform</h3>
-                    </div>
-                    <div class="tags">
-                        <span class="tag">HTML</span>
-                        <span class="tag">CSS</span>
-                        <span class="tag">JavaScript</span>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div>
-                        <div class="project-number">2</div>
-                        <h3>Portfolio Website</h3>
-                    </div>
-                    <div class="tags">
-                        <span class="tag">JS</span>
-                        <span class="tag">HTML5</span>
-                        <span class="tag">CSS3</span>
-                    </div>
-                </div>
-
-                <div class="project-card">
-                    <div>
-                        <div class="project-number">3</div>
-                        <h3>Weather Dashboard</h3>
-                    </div>
-                    <div class="tags">
-                        <span class="tag">JS</span>
-                        <span class="tag">API</span>
-                        <span class="tag">Chart.js</span>
-                    </div>
-                </div>
-
-                <div class="project-card full-width">
-                    <div>
-                        <div class="project-number">4</div>
-                        <h3>Task Management App</h3>
-                    </div>
-                    <div class="tags">
-                        <span class="tag">React</span>
-                        <span class="tag">Node.js</span>
-                        <span class="tag">MongoDB</span>
-                    </div>
-                </div>
-
-            </div>
-            
-            <button class="load-more-btn">Load More Projects</button>
-        </section>
-
-        <div class="cta-section">
-            <h2>Let's Work Together</h2>
-            <p>Have a project in mind? I'd love to hear about it and discuss how we can bring your ideas to life.</p>
-            <div class="cta-buttons">
-                <a href="#" class="btn btn-white">
-                    <i class="fas fa-paper-plane"></i> Get In Touch
-                </a>
-                <a href="#" class="btn btn-outline">
-                    <i class="fas fa-download"></i> Resume
-                </a>
-            </div>
-        </div>
-
-        <div class="copyright">
-            &copy; 2025 Arpit Pandey. All rights reserved.
-        </div>
-    </div>
-
-    <script>
-        function toggleTheme() {
-            const html = document.documentElement;
-            const currentTheme = html.getAttribute('data-theme');
-            const icon = document.querySelector('.theme-toggle i');
-            
-            if (currentTheme === 'light') {
-                html.setAttribute('data-theme', 'dark');
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-sun');
-            } else {
-                html.setAttribute('data-theme', 'light');
-                icon.classList.remove('fa-sun');
-                icon.classList.add('fa-moon');
-            }
-        }
-    </script>
-</body>
-</html>
-            font-family: 'Fredoka', sans-serif;
-            background-color: var(--white);
-            color: var(--black);
-            line-height: 1.5;
-            min-height: 100vh;
-            overflow-x: hidden;
-            transition: background-color 0.3s ease;
-        }
-
-        /* Login Page - Premium Design */
-        .login-container {
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 24px;
-            background: linear-gradient(135deg, var(--gray-100) 0%, var(--white) 100%);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .login-container::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, var(--gray-200) 0%, transparent 70%);
-            opacity: 0.6;
-            z-index: 0;
-        }
-
-        .login-box {
-            width: 100%;
-            max-width: 360px;
-            background-color: var(--white);
-            border-radius: var(--radius-lg);
-            padding: 40px 32px;
-            text-align: center;
-            box-shadow: var(--shadow-lg);
-            position: relative;
-            z-index: 1;
-            border: 1px solid var(--gray-200);
-            transform: translateY(0);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
-        }
-
-        .login-box:hover {
-            transform: translateY(-4px);
-            box-shadow: var(--shadow-lg), 0 12px 36px rgba(0, 0, 0, 0.1);
-        }
-
-        .app-logo {
-            font-size: 3rem;
-            margin-bottom: 16px;
-            line-height: 1;
-        }
-
-        .app-title {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-            background: linear-gradient(90deg, var(--black) 0%, var(--gray-600) 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .app-subtitle {
-            font-size: 1rem;
-            font-weight: 400;
-            margin-bottom: 36px;
-            color: var(--gray-500);
-            max-width: 280px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .input-group {
-            margin-bottom: 24px;
-            text-align: left;
-            position: relative;
-        }
-
-        .input-label {
-            display: flex;
-            align-items: center;
-            font-weight: 500;
-            margin-bottom: 10px;
-            font-size: 0.95rem;
-            color: var(--gray-700);
-        }
-
-        .input-label-icon {
-            margin-right: 8px;
-            font-size: 1.1rem;
-        }
-
-        .input-field {
-            width: 100%;
-            padding: 18px 20px 18px 48px;
-            border: 2px solid var(--gray-300);
-            border-radius: var(--radius-md);
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1rem;
-            background-color: var(--white);
-            transition: all 0.3s ease;
-            color: var(--black);
-        }
-
-        .input-field:focus {
-            outline: none;
-            border-color: var(--black);
-            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .input-icon {
-            position: absolute;
-            left: 18px;
-            top: 50%;
-            transform: translateY(-50%);
-            font-size: 1.2rem;
-            color: var(--gray-500);
-            transition: color 0.3s ease;
-        }
-
-        .input-field:focus + .input-icon {
-            color: var(--black);
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 18px;
-            background-color: var(--black);
-            color: var(--white);
-            border: none;
-            border-radius: var(--radius-md);
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            margin-top: 10px;
-            position: relative;
-            overflow: hidden;
-            letter-spacing: 0.5px;
-        }
-
-        .login-btn::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 5px;
-            height: 5px;
-            background: rgba(255, 255, 255, 0.5);
-            opacity: 0;
-            border-radius: 100%;
-            transform: scale(1, 1) translate(-50%);
-            transform-origin: 50% 50%;
-        }
-
-        .login-btn:focus:not(:active)::after {
-            animation: ripple 1s ease-out;
-        }
-
-        @keyframes ripple {
-            0% {
-                transform: scale(0, 0);
-                opacity: 0.5;
-            }
-            100% {
-                transform: scale(40, 40);
-                opacity: 0;
-            }
-        }
-
-        .login-btn:hover {
-            background-color: var(--gray-700);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-        }
-
-        .demo-credentials {
-            margin-top: 32px;
-            padding: 20px;
-            border-radius: var(--radius-md);
-            font-size: 0.9rem;
-            background-color: var(--gray-100);
-            border: 1px solid var(--gray-200);
-        }
-
-        .demo-title {
-            font-weight: 600;
-            margin-bottom: 8px;
-            color: var(--gray-700);
-        }
-
-        .demo-detail {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 6px;
-            color: var(--gray-600);
-        }
-
-        /* To-Do App Page - Premium Design */
-        .app-container {
-            display: none;
-            flex-direction: column;
-            min-height: 100vh;
-            max-width: 100%;
-            width: 100%;
-            background-color: var(--white);
-        }
-
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 24px 20px;
-            background-color: var(--white);
-            box-shadow: var(--shadow-sm);
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            border-bottom: 1px solid var(--gray-200);
-        }
-
-        .user-greeting {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .greeting-text {
-            font-size: 0.9rem;
-            color: var(--gray-500);
-            margin-bottom: 4px;
-        }
-
-        .user-name {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--black);
-        }
-
-        .logout-btn {
-            padding: 12px 20px;
-            background-color: var(--white);
-            color: var(--black);
-            border: 2px solid var(--gray-300);
-            border-radius: var(--radius-sm);
-            font-family: 'Fredoka', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .logout-btn:hover {
-            background-color: var(--gray-100);
-            border-color: var(--gray-400);
-        }
-
-        .todo-main {
-            flex: 1;
-            padding: 20px 20px 100px;
-            overflow-y: auto;
-            background-color: var(--gray-100);
-        }
-
-        .stats-container {
-            display: flex;
-            justify-content: space-between;
-            background-color: var(--white);
-            border-radius: var(--radius-md);
-            padding: 20px;
-            margin-bottom: 24px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--gray-200);
-        }
-
-        .stat-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-        }
-
-        .stat-value {
-            font-size: 1.8rem;
-            font-weight: 700;
-            color: var(--black);
-            margin-bottom: 4px;
-        }
-
-        .stat-label {
-            font-size: 0.85rem;
-            color: var(--gray-500);
-            font-weight: 500;
-        }
-
-        .add-todo-container {
-            background-color: var(--white);
-            border-radius: var(--radius-md);
-            padding: 24px;
-            margin-bottom: 28px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--gray-200);
-        }
-
-        .add-todo-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            margin-bottom: 18px;
-            color: var(--black);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .add-todo-form {
-            display: flex;
-            gap: 12px;
-        }
-
-        .add-todo-input {
-            flex: 1;
-            padding: 18px 20px;
-            border: 2px solid var(--gray-300);
-            border-radius: var(--radius-sm);
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1rem;
-            transition: all 0.3s ease;
-        }
-
-        .add-todo-input:focus {
-            outline: none;
-            border-color: var(--black);
-            box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.05);
-        }
-
-        .add-todo-btn {
-            padding: 18px 24px;
-            background-color: var(--black);
-            color: var(--white);
-            border: none;
-            border-radius: var(--radius-sm);
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-
-        .add-todo-btn:hover {
-            background-color: var(--gray-700);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .todos-container {
-            background-color: var(--white);
-            border-radius: var(--radius-md);
-            padding: 24px;
-            box-shadow: var(--shadow-sm);
-            border: 1px solid var(--gray-200);
-        }
-
-        .todos-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .todos-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--black);
-        }
-
-        .filter-buttons {
-            display: flex;
-            gap: 8px;
-        }
-
-        .filter-btn {
-            padding: 8px 14px;
-            background-color: var(--gray-100);
-            color: var(--gray-600);
-            border: 1px solid var(--gray-300);
-            border-radius: var(--radius-sm);
-            font-family: 'Fredoka', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s ease;
-        }
-
-        .filter-btn.active {
-            background-color: var(--black);
-            color: var(--white);
-            border-color: var(--black);
-        }
-
-        .todo-list {
-            list-style-type: none;
-        }
-
-        .todo-item {
-            display: flex;
-            align-items: center;
-            padding: 20px;
-            margin-bottom: 12px;
-            border-radius: var(--radius-sm);
-            background-color: var(--white);
-            border: 1px solid var(--gray-200);
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .todo-item:hover {
-            border-color: var(--gray-400);
-            box-shadow: var(--shadow-sm);
-            transform: translateY(-2px);
-        }
-
-        .todo-item.completed {
-            background-color: var(--gray-100);
-            opacity: 0.9;
-        }
-
-        .todo-checkbox {
-            margin-right: 16px;
-            width: 22px;
-            height: 22px;
-            border-radius: 50%;
-            border: 2px solid var(--gray-400);
-            appearance: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.2s ease;
-        }
-
-        .todo-checkbox:checked {
-            background-color: var(--black);
-            border-color: var(--black);
-        }
-
-        .todo-checkbox:checked::after {
-            content: '✓';
-            color: var(--white);
-            font-size: 14px;
-            font-weight: bold;
-        }
-
-        .todo-content {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .todo-text {
-            font-size: 1.05rem;
-            word-break: break-word;
-            padding-right: 10px;
-            transition: all 0.3s ease;
-        }
-
-        .todo-item.completed .todo-text {
-            text-decoration: line-through;
-            color: var(--gray-500);
-        }
-
-        .todo-date {
-            font-size: 0.8rem;
-            color: var(--gray-400);
-            margin-top: 6px;
-        }
-
-        .todo-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .todo-action-btn {
-            background: none;
-            border: none;
-            font-size: 1.2rem;
-            cursor: pointer;
-            color: var(--gray-400);
-            padding: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 4px;
-            transition: all 0.2s ease;
-        }
-
-        .todo-action-btn:hover {
-            color: var(--black);
-            background-color: var(--gray-200);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: var(--gray-400);
-        }
-
-        .empty-state-icon {
-            font-size: 3.5rem;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        .empty-state-text {
-            font-size: 1.1rem;
-            margin-bottom: 12px;
-            color: var(--gray-500);
-        }
-
-        .empty-state-subtext {
-            font-size: 0.9rem;
-            color: var(--gray-400);
-        }
-
-        /* Floating Action Button */
-        .fab-container {
-            position: fixed;
-            bottom: 30px;
-            right: 20px;
-            z-index: 100;
-        }
-
-        .fab {
-            width: 60px;
-            height: 60px;
-            background-color: var(--black);
-            color: var(--white);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.8rem;
-            box-shadow: var(--shadow-lg);
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: none;
-        }
-
-        .fab:hover {
-            transform: scale(1.1) rotate(90deg);
-            box-shadow: var(--shadow-lg), 0 8px 20px rgba(0, 0, 0, 0.2);
-        }
-
-        /* Responsive styles for mobile only */
-        @media (max-width: 480px) {
-            .login-box {
-                padding: 36px 28px;
-                max-width: 340px;
-            }
-
-            .app-title {
-                font-size: 2.2rem;
-            }
-
-            .add-todo-form {
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .add-todo-btn {
-                padding: 16px;
-                justify-content: center;
-            }
-
-            .stats-container {
-                padding: 16px;
-            }
-
-            .stat-value {
-                font-size: 1.6rem;
-            }
-        }
-
-        /* Hide on non-mobile devices */
-        @media (min-width: 768px) {
-            body::before {
-                content: "📱 This app is designed for mobile devices only. Please view on a smaller screen or use mobile emulation in dev tools.";
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: var(--white);
-                color: var(--black);
-                font-size: 1.5rem;
-                text-align: center;
-                padding: 40px;
-                z-index: 1000;
-                font-family: 'Fredoka', sans-serif;
-                line-height: 1.6;
-            }
-            
-            .login-container, .app-container {
-                display: none !important;
-            }
-        }
-
-        /* Animation for page transitions */
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .fade-in {
-            animation: fadeIn 0.5s ease forwards;
-        }
-
-        /* Animation for todo items */
-        @keyframes slideIn {
-            from { opacity: 0; transform: translateX(-20px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        .todo-item {
-            animation: slideIn 0.3s ease forwards;
-        }
-    </style>
-</head>
-<body>
-    <!-- Login Page -->
-    <div class="login-container" id="loginPage">
-        <div class="login-box fade-in">
-            <div class="app-logo">✓</div>
-            <h1 class="app-title">TaskFlow</h1>
-            <p class="app-subtitle">Organize your tasks with minimal design and maximum efficiency</p>
-            
-            <form id="loginForm">
-                <div class="input-group">
-                    <div class="input-label">
-                        <span class="input-label-icon">👤</span>
-                        Username
-                    </div>
-                    <input type="text" class="input-field" id="username" placeholder="Enter your username" required>
-                    <div class="input-icon">👤</div>
-                </div>
-                
-                <div class="input-group">
-                    <div class="input-label">
-                        <span class="input-label-icon">🔒</span>
-                        Password
-                    </div>
-                    <input type="password" class="input-field" id="password" placeholder="Enter your password" required>
-                    <div class="input-icon">🔒</div>
-                </div>
-                
-                <div id="loginError" style="color: #ff3333; font-size: 0.9rem; margin-bottom: 20px; display: none; padding: 12px; background-color: #fff5f5; border-radius: var(--radius-sm); border: 1px solid #ffdddd;">
-                    ❌ Invalid username or password. Please try again.
-                </div>
-                
-                <button type="submit" class="login-btn">
-                    <span>Login to Continue</span>
-                </button>
-            </form>
-            
-            <div class="demo-credentials fade-in" style="animation-delay: 0.2s;">
-                <div class="demo-title">Demo Credentials</div>
-                <div class="demo-detail">
-                    <span>Username:</span>
-                    <span><strong>user</strong></span>
-                </div>
-                <div class="demo-detail">
-                    <span>Password:</span>
-                    <span><strong>todo123</strong></span>
+    <div class="app-container">
+        <div id="page-loader" class="page-loader"></div>
+
+        <div id="custom-modal" class="modal-overlay hidden">
+            <div class="modal-box">
+                <h3 id="modal-title">Confirm Action</h3>
+                <p id="modal-msg">Are you sure you want to do this?</p>
+                <div class="modal-actions">
+                    <button id="modal-cancel" class="btn-bordered-custom">Cancel</button>
+                    <button id="modal-confirm" class="btn-delete">Yes, Delete</button>
                 </div>
             </div>
         </div>
-    </div>
-    
-    <!-- To-Do App Page -->
-    <div class="app-container" id="appPage">
-        <header class="app-header">
-            <div class="user-greeting">
-                <div class="greeting-text">Welcome back,</div>
-                <div class="user-name" id="userName">User</div>
-            </div>
-            <button class="logout-btn" id="logoutBtn">
-                <span>🚪</span>
-                <span>Logout</span>
-            </button>
-        </header>
-        
-        <main class="todo-main">
-            <div class="stats-container fade-in">
-                <div class="stat-item">
-                    <div class="stat-value" id="totalTasks">0</div>
-                    <div class="stat-label">Total</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="completedTasks">0</div>
-                    <div class="stat-label">Done</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="pendingTasks">0</div>
-                    <div class="stat-label">Pending</div>
-                </div>
-            </div>
-            
-            <div class="add-todo-container fade-in" style="animation-delay: 0.1s;">
-                <div class="add-todo-title">
-                    <span>➕</span>
-                    <span>Add New Task</span>
-                </div>
-                <form class="add-todo-form" id="addTodoForm">
-                    <input type="text" class="add-todo-input" id="todoInput" placeholder="What needs to be done?" required>
-                    <button type="submit" class="add-todo-btn">
-                        <span>➕</span>
-                        <span>Add</span>
+
+        <div id="template-modal" class="modal-overlay hidden" style="z-index: 3600;">
+            <div class="modal-box template-modal-box">
+                <div class="template-header">
+                    <h3>Choose a Template</h3>
+                    <button id="btn-close-template" class="btn-bordered-custom">
+                        <i class="fa-solid fa-times"></i>
                     </button>
-                </form>
-            </div>
-            
-            <div class="todos-container fade-in" style="animation-delay: 0.2s;">
-                <div class="todos-header">
-                    <h2 class="todos-title">Your Tasks</h2>
-                    <div class="filter-buttons">
-                        <button class="filter-btn active" data-filter="all">All</button>
-                        <button class="filter-btn" data-filter="pending">Pending</button>
-                        <button class="filter-btn" data-filter="completed">Completed</button>
-                    </div>
                 </div>
-                
-                <div id="emptyState" class="empty-state">
-                    <div class="empty-state-icon">📋</div>
-                    <p class="empty-state-text">No tasks yet</p>
-                    <p class="empty-state-subtext">Add a task using the form above</p>
+
+                <div class="template-categories">
+                    <button class="category-btn active" data-category="all">All Templates</button>
+                    <button class="category-btn" data-category="work">Work & Business</button>
+                    <button class="category-btn" data-category="study">Study & Learning</button>
+                    <button class="category-btn" data-category="personal">Personal & Journal</button>
+                    <button class="category-btn" data-category="creative">Creative Writing</button>
                 </div>
-                
-                <ul class="todo-list" id="todoList">
-                    <!-- To-do items will be added here dynamically -->
-                </ul>
+
+                <div id="template-grid" class="template-grid">
+                </div>
             </div>
-        </main>
-        
-        <div class="fab-container">
-            <button class="fab" id="fabButton">
-                <span>+</span>
-            </button>
         </div>
-    </div>
 
-    <script>
-        // DOM Elements
-        const loginPage = document.getElementById('loginPage');
-        const appPage = document.getElementById('appPage');
-        const loginForm = document.getElementById('loginForm');
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const loginError = document.getElementById('loginError');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const addTodoForm = document.getElementById('addTodoForm');
-        const todoInput = document.getElementById('todoInput');
-        const todoList = document.getElementById('todoList');
-        const emptyState = document.getElementById('emptyState');
-        const fabButton = document.getElementById('fabButton');
-        const userNameElement = document.getElementById('userName');
-        const totalTasksElement = document.getElementById('totalTasks');
-        const completedTasksElement = document.getElementById('completedTasks');
-        const pendingTasksElement = document.getElementById('pendingTasks');
-        const filterButtons = document.querySelectorAll('.filter-btn');
+        <div id="auth-modal" class="modal-overlay hidden" style="z-index: 4000;">
+            <div class="modal-box auth-box">
+                <div class="auth-nav">
+                    <button class="auth-nav-btn active" data-mode="login">Welcome Back</button>
+                    <button class="auth-nav-btn" data-mode="signup">Create Account</button>
+                </div>
 
-        // Demo credentials
-        const DEMO_USER = 'user';
-        const DEMO_PASS = 'todo123';
+                <div id="login-form" class="auth-form active-form">
+                    <input type="email" id="login-email" class="auth-input" placeholder="Email Address"
+                        autocomplete="email">
+                    <input type="password" id="login-password" class="auth-input" placeholder="Password"
+                        autocomplete="current-password">
+                    <div id="login-error" class="error-text hidden"></div>
+                </div>
 
-        // Current filter state
-        let currentFilter = 'all';
-        let currentUsername = '';
+                <div id="signup-form" class="auth-form">
+                    <input type="email" id="signup-email" class="auth-input" placeholder="Email Address"
+                        autocomplete="email">
+                    <input type="password" id="signup-password" class="auth-input" placeholder="Password"
+                        autocomplete="new-password">
+                    <input type="password" id="signup-confirm-password" class="auth-input"
+                        placeholder="Confirm Password" autocomplete="new-password">
+                    <div id="signup-error" class="error-text hidden"></div>
+                </div>
 
-        // Check if user is already logged in
-        document.addEventListener('DOMContentLoaded', () => {
-            const isLoggedIn = localStorage.getItem('todoAppLoggedIn');
-            const savedTodos = localStorage.getItem('todoAppTasks');
-            const savedUsername = localStorage.getItem('todoAppUsername');
-            
-            if (isLoggedIn === 'true' && savedUsername) {
-                currentUsername = savedUsername;
-                userNameElement.textContent = savedUsername.charAt(0).toUpperCase() + savedUsername.slice(1);
-                showAppPage();
-                
-                // Load saved todos
-                if (savedTodos) {
-                    const todos = JSON.parse(savedTodos);
-                    renderTodos(todos);
-                    updateStats(todos);
-                }
-            } else {
-                showLoginPage();
-            }
-        });
+                <div class="auth-modal-actions">
+                    <button id="auth-cancel" class="btn-bordered-custom semi-square">Cancel</button>
+                    <button id="auth-proceed" class="btn btn-primary semi-square">Proceed</button>
+                </div>
+            </div>
+        </div>
 
-        // Show login page
-        function showLoginPage() {
-            loginPage.style.display = 'flex';
-            appPage.style.display = 'none';
-            loginForm.reset();
-            loginError.style.display = 'none';
-            
-            // Add fade-in animation
-            const loginBox = document.querySelector('.login-box');
-            loginBox.classList.remove('fade-in');
-            void loginBox.offsetWidth; // Trigger reflow
-            loginBox.classList.add('fade-in');
-        }
+        <div id="guest-modal" class="modal-overlay hidden" style="z-index: 4100;">
+            <div class="modal-box guest-box">
+                <h3>Enter Guest Username</h3>
+                <p>This will be used to backup your local data if you create an account later.</p>
+                <input type="text" id="guest-username" class="auth-input" placeholder="Choose a username">
+                <div id="guest-error" class="error-text hidden"></div>
+                <div class="guest-modal-actions">
+                    <button id="guest-cancel" class="btn-bordered-custom semi-square">Cancel</button>
+                    <button id="guest-proceed" class="btn btn-primary semi-square">Start as Guest</button>
+                </div>
+            </div>
+        </div>
 
-        // Show app page
-        function showAppPage() {
-            loginPage.style.display = 'none';
-            appPage.style.display = 'flex';
-            
-            // Add fade-in animation to elements
-            const fadeElements = document.querySelectorAll('.fade-in');
-            fadeElements.forEach((el, index) => {
-                el.style.animationDelay = `${index * 0.1}s`;
-                el.classList.remove('fade-in');
-                void el.offsetWidth; // Trigger reflow
-                el.classList.add('fade-in');
-            });
-            
-            // Focus on input field
-            setTimeout(() => {
-                todoInput.focus();
-            }, 300);
-        }
+        <div id="export-modal" class="modal-overlay hidden" style="z-index: 3500;">
+            <div class="modal-box export-box">
+                <i class="fa-solid fa-file-pdf export-icon"></i>
+                <h3>Export PDF</h3>
+                <p>Customize your download.</p>
 
-        // Login form submission
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value.trim();
-            
-            // Simple validation
-            if (username === DEMO_USER && password === DEMO_PASS) {
-                // Successful login
-                localStorage.setItem('todoAppLoggedIn', 'true');
-                localStorage.setItem('todoAppUsername', username);
-                currentUsername = username;
-                userNameElement.textContent = username.charAt(0).toUpperCase() + username.slice(1);
-                showAppPage();
-                
-                // Initialize with sample todos if first time
-                const todos = getTodos();
-                if (todos.length === 0) {
-                    initializeSampleTodos();
-                }
-            } else {
-                // Failed login with animation
-                loginError.style.display = 'block';
-                loginForm.classList.add('shake');
-                setTimeout(() => {
-                    loginForm.classList.remove('shake');
-                }, 500);
-                
-                passwordInput.value = '';
-                passwordInput.focus();
-            }
-        });
+                <div class="export-form">
+                    <label>File Name</label>
+                    <input type="text" id="export-filename" class="login-input" placeholder="GhostNotes"
+                        value="GhostNotes">
 
-        // Add shake animation for login error
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes shake {
-                0%, 100% { transform: translateX(0); }
-                10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-                20%, 40%, 60%, 80% { transform: translateX(5px); }
-            }
-            .shake {
-                animation: shake 0.5s ease-in-out;
-            }
-        `;
-        document.head.appendChild(style);
-
-        // Logout functionality
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('todoAppLoggedIn');
-            localStorage.removeItem('todoAppUsername');
-            showLoginPage();
-        });
-
-        // Get todos from localStorage
-        function getTodos() {
-            const todos = localStorage.getItem('todoAppTasks');
-            return todos ? JSON.parse(todos) : [];
-        }
-
-        // Save todos to localStorage
-        function saveTodos(todos) {
-            localStorage.setItem('todoAppTasks', JSON.stringify(todos));
-        }
-
-        // Update stats
-        function updateStats(todos) {
-            const total = todos.length;
-            const completed = todos.filter(todo => todo.completed).length;
-            const pending = total - completed;
-            
-            totalTasksElement.textContent = total;
-            completedTasksElement.textContent = completed;
-            pendingTasksElement.textContent = pending;
-        }
-
-        // Filter todos based on current filter
-        function filterTodos(todos) {
-            if (currentFilter === 'all') return todos;
-            if (currentFilter === 'pending') return todos.filter(todo => !todo.completed);
-            if (currentFilter === 'completed') return todos.filter(todo => todo.completed);
-            return todos;
-        }
-
-        // Render todos to the UI
-        function renderTodos(todos) {
-            // Clear the current list
-            todoList.innerHTML = '';
-            
-            // Filter todos
-            const filteredTodos = filterTodos(todos);
-            
-            // If no todos, show empty state
-            if (filteredTodos.length === 0) {
-                emptyState.style.display = 'block';
-                return;
-            }
-            
-            // Hide empty state
-            emptyState.style.display = 'none';
-            
-            // Render each todo item
-            filteredTodos.forEach((todo, index) => {
-                // Find the original index in the todos array
-                const originalIndex = todos.findIndex(t => t.id === todo.id);
-                
-                const todoItem = document.createElement('li');
-                todoItem.className = `todo-item ${todo.completed ? 'completed' : ''}`;
-                todoItem.style.animationDelay = `${index * 0.05}s`;
-                
-                // Format date
-                const date = new Date(todo.createdAt);
-                const formattedDate = date.toLocaleDateString('en-US', { 
-                    month: 'short', 
-                    day: 'numeric',
-                    year: date.getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined
-                });
-                
-                todoItem.innerHTML = `
-                    <input type="checkbox" class="todo-checkbox" ${todo.completed ? 'checked' : ''}>
-                    <div class="todo-content">
-                        <span class="todo-text">${todo.text}</span>
-                        <span class="todo-date">${formattedDate}</span>
-                    </div>
-                    <div class="todo-actions">
-                        <button class="todo-action-btn delete-btn" title="Delete">
-                            🗑️
+                    <label>PDF Theme</label>
+                    <div class="theme-selector-row">
+                        <button class="theme-option active" data-theme="light">
+                            <i class="fa-solid fa-sun"></i> Light (Print)
+                        </button>
+                        <button class="theme-option" data-theme="dark">
+                            <i class="fa-solid fa-moon"></i> Dark (Screen)
                         </button>
                     </div>
-                `;
-                
-                todoList.appendChild(todoItem);
-                
-                // Add event listener to checkbox
-                const checkbox = todoItem.querySelector('.todo-checkbox');
-                checkbox.addEventListener('change', () => toggleTodoComplete(todo.id));
-                
-                // Add event listener to delete button
-                const deleteBtn = todoItem.querySelector('.delete-btn');
-                deleteBtn.addEventListener('click', () => deleteTodo(todo.id));
-            });
-            
-            // Update stats
-            updateStats(todos);
-        }
-
-        // Initialize with sample todos
-        function initializeSampleTodos() {
-            const sampleTodos = [
-                {
-                    id: generateId(),
-                    text: 'Welcome to TaskFlow!',
-                    completed: false,
-                    createdAt: new Date().toISOString()
-                },
-                {
-                    id: generateId(),
-                    text: 'Tap the checkbox to complete a task',
-                    completed: true,
-                    createdAt: new Date(Date.now() - 86400000).toISOString()
-                },
-                {
-                    id: generateId(),
-                    text: 'Swipe or use the delete button to remove tasks',
-                    completed: false,
-                    createdAt: new Date(Date.now() - 172800000).toISOString()
-                },
-                {
-                    id: generateId(),
-                    text: 'Use the filter buttons to view pending or completed tasks',
-                    completed: false,
-                    createdAt: new Date(Date.now() - 259200000).toISOString()
-                }
-            ];
-            
-            saveTodos(sampleTodos);
-            renderTodos(sampleTodos);
-            updateStats(sampleTodos);
-        }
-
-        // Generate unique ID
-        function generateId() {
-            return Date.now().toString(36) + Math.random().toString(36).substr(2);
-        }
-
-        // Add new todo
-        addTodoForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const text = todoInput.value.trim();
-            if (text === '') return;
-            
-            const todos = getTodos();
-            const newTodo = {
-                id: generateId(),
-                text,
-                completed: false,
-                createdAt: new Date().toISOString()
-            };
-            
-            todos.unshift(newTodo); // Add to beginning
-            saveTodos(todos);
-            renderTodos(todos);
-            
-            // Clear input and focus
-            todoInput.value = '';
-            todoInput.focus();
-            
-            // Show feedback
-            showNotification('Task added successfully!');
-        });
-
-        // FAB button click
-        fabButton.addEventListener('click', () => {
-            todoInput.focus();
-            // Smooth scroll to input
-            document.querySelector('.add-todo-container').scrollIntoView({ 
-                behavior: 'smooth',
-                block: 'center'
-            });
-        });
-
-        // Toggle todo completion
-        function toggleTodoComplete(id) {
-            const todos = getTodos();
-            const todoIndex = todos.findIndex(todo => todo.id === id);
-            
-            if (todoIndex !== -1) {
-                todos[todoIndex].completed = !todos[todoIndex].completed;
-                saveTodos(todos);
-                renderTodos(todos);
-                
-                // Show feedback
-                const status = todos[todoIndex].completed ? 'completed' : 'marked as pending';
-                showNotification(`Task ${status}!`);
-            }
-        }
-
-        // Delete todo
-        function deleteTodo(id) {
-            const todos = getTodos();
-            const todoIndex = todos.findIndex(todo => todo.id === id);
-            
-            if (todoIndex !== -1) {
-                // Remove with animation
-                const todoItem = document.querySelector(`[data-id="${id}"]`);
-                if (todoItem) {
-                    todoItem.style.transform = 'translateX(100%)';
-                    todoItem.style.opacity = '0';
-                    
-                    setTimeout(() => {
-                        todos.splice(todoIndex, 1);
-                        saveTodos(todos);
-                        renderTodos(todos);
-                        showNotification('Task deleted!');
-                    }, 300);
-                } else {
-                    todos.splice(todoIndex, 1);
-                    saveTodos(todos);
-                    renderTodos(todos);
-                    showNotification('Task deleted!');
-                }
-            }
-        }
-
-        // Filter button click handlers
-        filterButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                // Update active button
-                filterButtons.forEach(btn => btn.classList.remove('active'));
-                button.classList.add('active');
-                
-                // Update filter and re-render
-                currentFilter = button.dataset.filter;
-                const todos = getTodos();
-                renderTodos(todos);
-            });
-        });
-
-        // Show notification
-        function showNotification(message) {
-            // Remove existing notification
-            const existingNotification = document.getElementById('customNotification');
-            if (existingNotification) {
-                existingNotification.remove();
-            }
-            
-            // Create notification element
-            const notification = document.createElement('div');
-            notification.id = 'customNotification';
-            notification.textContent = message;
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background-color: var(--black);
-                color: var(--white);
-                padding: 14px 24px;
-                border-radius: var(--radius-md);
-                font-weight: 500;
-                z-index: 1000;
-                box-shadow: var(--shadow-lg);
-                animation: slideDown 0.3s ease forwards;
-            `;
-            
-            // Add animation
-            const style = document.createElement('style');
-            style.textContent = `
-                @keyframes slideDown {
-                    from { top: -50px; opacity: 0; }
-                    to { top: 20px; opacity: 1; }
-                }
-                @keyframes slideUp {
-                    from { top: 20px; opacity: 1; }
-                    to { top: -50px; opacity: 0; }
-                }
-            `;
-            document.head.appendChild(style);
-            
-            document.body.appendChild(notification);
-            
-            // Remove after 3 seconds
-            setTimeout(() => {
-                notification.style.animation = 'slideUp 0.3s ease forwards';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
-                    }
-                }, 300);
-            }, 3000);
-        }
-
-        // Initialize on load
-        window.addEventListener('load', () => {
-            // Add data-id attributes for swipe detection
-            setTimeout(() => {
-                const todos = getTodos();
-                if (todos.length === 0 && localStorage.getItem('todoAppLoggedIn') === 'true') {
-                    initializeSampleTodos();
-                }
-            }, 500);
-        });
-
-        // Add swipe to delete functionality for mobile
-        let touchStartX = 0;
-        let touchEndX = 0;
-
-        document.addEventListener('touchstart', e => {
-            touchStartX = e.changedTouches[0].screenX;
-        }, false);
-
-        document.addEventListener('touchend', e => {
-            touchEndX = e.changedTouches[0].screenX;
-            handleSwipe();
-        }, false);
-
-        function handleSwipe() {
-            const swipeThreshold = 100;
-            const swipeDistance = touchEndX - touchStartX;
-            
-            // Left swipe (negative)
-            if (swipeDistance < -swipeThreshold) {
-                // Find the todo item that was swiped
-                const swipedElement = document.elementFromPoint(touchEndX, touchEndY);
-                const todoItem = swipedElement.closest('.todo-item');
-                
-                if (todoItem) {
-                    // Get the todo ID from the delete button
-                    const deleteBtn = todoItem.querySelector('.delete-btn');
-                    if (deleteBtn) {
-                        // Trigger delete
-                        const todoId = deleteBtn.dataset.id;
-                        if (todoId) {
-                            deleteTodo(todoId);
-                        }
-                    }
-                }
-            }
-        }
-    </script>
-</body>
-</html>        }
-
-        .login-box {
-            width: 100%;
-            max-width: 340px;
-            border: 2px solid #000000;
-            border-radius: 12px;
-            padding: 30px 25px;
-            text-align: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
-
-        .app-title {
-            font-size: 2.2rem;
-            font-weight: 700;
-            margin-bottom: 8px;
-            letter-spacing: -0.5px;
-        }
-
-        .app-subtitle {
-            font-size: 1rem;
-            font-weight: 300;
-            margin-bottom: 30px;
-            color: #333333;
-        }
-
-        .input-group {
-            margin-bottom: 22px;
-            text-align: left;
-        }
-
-        .input-group label {
-            display: block;
-            font-weight: 500;
-            margin-bottom: 8px;
-            font-size: 1rem;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 14px 16px;
-            border: 2px solid #000000;
-            border-radius: 8px;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1rem;
-            background-color: #ffffff;
-            transition: border-color 0.2s;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: #555555;
-        }
-
-        .login-btn {
-            width: 100%;
-            padding: 16px;
-            background-color: #000000;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1.1rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            margin-top: 10px;
-        }
-
-        .login-btn:hover {
-            background-color: #333333;
-        }
-
-        .demo-credentials {
-            margin-top: 25px;
-            padding: 15px;
-            border: 1px dashed #000000;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            background-color: #f5f5f5;
-        }
-
-        /* To-do app page styles */
-        .app-container {
-            display: none;
-            flex-direction: column;
-            min-height: 100vh;
-            max-width: 100%;
-            width: 100%;
-        }
-
-        .app-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 20px 18px;
-            border-bottom: 2px solid #000000;
-            background-color: #ffffff;
-        }
-
-        .header-title {
-            font-size: 1.8rem;
-            font-weight: 700;
-        }
-
-        .logout-btn {
-            padding: 10px 18px;
-            background-color: #ffffff;
-            color: #000000;
-            border: 2px solid #000000;
-            border-radius: 6px;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 0.95rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .logout-btn:hover {
-            background-color: #000000;
-            color: #ffffff;
-        }
-
-        .todo-main {
-            flex: 1;
-            padding: 20px 18px 30px;
-            overflow-y: auto;
-        }
-
-        .add-todo-form {
-            display: flex;
-            margin-bottom: 25px;
-            gap: 12px;
-        }
-
-        .add-todo-input {
-            flex: 1;
-            padding: 16px 18px;
-            border: 2px solid #000000;
-            border-radius: 8px;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1rem;
-        }
-
-        .add-todo-btn {
-            padding: 16px 24px;
-            background-color: #000000;
-            color: #ffffff;
-            border: none;
-            border-radius: 8px;
-            font-family: 'Fredoka', sans-serif;
-            font-size: 1rem;
-            font-weight: 600;
-            cursor: pointer;
-            white-space: nowrap;
-        }
-
-        .add-todo-btn:hover {
-            background-color: #333333;
-        }
-
-        .todo-list-container {
-            margin-top: 10px;
-        }
-
-        .todo-list-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 18px;
-            padding-bottom: 8px;
-            border-bottom: 1px solid #cccccc;
-        }
-
-        .todo-list {
-            list-style-type: none;
-        }
-
-        .todo-item {
-            display: flex;
-            align-items: center;
-            padding: 18px 16px;
-            margin-bottom: 12px;
-            border: 2px solid #000000;
-            border-radius: 8px;
-            background-color: #ffffff;
-            transition: all 0.2s;
-        }
-
-        .todo-item:hover {
-            box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
-        }
-
-        .todo-checkbox {
-            margin-right: 16px;
-            transform: scale(1.4);
-            accent-color: #000000;
-        }
-
-        .todo-text {
-            flex: 1;
-            font-size: 1.05rem;
-            word-break: break-word;
-            padding-right: 10px;
-        }
-
-        .todo-text.completed {
-            text-decoration: line-through;
-            color: #666666;
-        }
-
-        .delete-btn {
-            background: none;
-            border: none;
-            font-size: 1.4rem;
-            cursor: pointer;
-            color: #000000;
-            padding: 0 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-            color: #666666;
-        }
-
-        .empty-state-icon {
-            font-size: 3rem;
-            margin-bottom: 15px;
-        }
-
-        .empty-state-text {
-            font-size: 1.1rem;
-        }
-
-        /* Responsive styles for mobile only */
-        @media (max-width: 480px) {
-            .login-box {
-                padding: 25px 20px;
-                max-width: 320px;
-            }
-
-            .app-title {
-                font-size: 2rem;
-            }
-
-            .header-title {
-                font-size: 1.6rem;
-            }
-
-            .add-todo-form {
-                flex-direction: column;
-                gap: 10px;
-            }
-
-            .add-todo-btn {
-                padding: 14px;
-            }
-        }
-
-        /* Hide on non-mobile devices */
-        @media (min-width: 768px) {
-            body::before {
-                content: "This app is designed for mobile devices only. Please view on a smaller screen.";
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background-color: #ffffff;
-                color: #000000;
-                font-size: 1.5rem;
-                text-align: center;
-                padding: 20px;
-                z-index: 1000;
-            }
-            
-            .login-container, .app-container {
-                display: none !important;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Login Page -->
-    <div class="login-container" id="loginPage">
-        <div class="login-box">
-            <h1 class="app-title">To-Do</h1>
-            <p class="app-subtitle">Organize your tasks efficiently</p>
-            
-            <form id="loginForm">
-                <div class="input-group">
-                    <label for="username">Username</label>
-                    <input type="text" id="username" placeholder="Enter your username" required>
                 </div>
-                
-                <div class="input-group">
-                    <label for="password">Password</label>
-                    <input type="password" id="password" placeholder="Enter your password" required>
+
+                <div class="modal-actions">
+                    <button id="btn-cancel-export" class="btn-bordered-custom">Cancel</button>
+                    <button id="btn-confirm-export" class="btn btn-primary">Download</button>
                 </div>
-                
-                <div id="loginError" style="color: #ff3333; font-size: 0.9rem; margin-bottom: 15px; display: none;">
-                    Invalid username or password
+            </div>
+        </div>
+
+        <section id="view-intro" class="view-section active">
+            <header class="app-header simple-header">
+                <div class="logo">Ghost Writer</div>
+                <div class="header-right">
+                    <div class="theme-guest-container">
+                        <button id="theme-toggle-intro" class="text-toggle-btn theme-btn-ref">
+                            <span class="theme-text-span">Day</span>
+                        </button>
+                        <button id="guest-btn-intro" class="text-toggle-btn guest-btn ">
+                            <span class="guest-text">Guest</span>
+                        </button>
+                    </div>
                 </div>
-                
-                <button type="submit" class="login-btn">Login</button>
-            </form>
-            
-            <div class="demo-credentials">
-                <p><strong>Demo Credentials:</strong></p>
-                <p>Username: <strong>user</strong></p>
-                <p>Password: <strong>todo123</strong></p>
+            </header>
+
+            <div class="hero-content center-content">
+                <div class="text-section text-center">
+                    <span class="badge">Distraction Free</span>
+                    <h1>Clear Mind.</h1>
+                    <p class="subtitle">Just you and your thoughts. No clutter, just focus.</p>
+
+                    <div class="btn-group center-buttons">
+                        <button id="btn-lets-go" class="btn btn-primary">Start Writing</button>
+                    </div>
+                </div>
+
+                <div class="visual-section">
+                    <div class="circle-bg">
+                        <i class="fa-solid fa-ghost big-ghost"></i>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-dashboard" class="view-section hidden">
+            <header class="app-header dashboard-mobile-layout">
+                <div class="logo logo-sm" id="user-greeting">Welcome Back</div>
+                <div id="dash-btn-container" class="header-right dash-buttons-row">
+                    <button id="btn-dashboard-back" class="text-toggle-btn icon-switch-btn" title="Home">
+                        <span class="desktop-text">Home</span>
+                        <i class="mobile-icon fa-solid fa-house"></i>
+                    </button>
+
+                    <button id="theme-toggle-dash" class="text-toggle-btn theme-btn-ref icon-switch-btn" title="Theme">
+                        <span class="theme-text-span desktop-text">Day</span>
+                        <i class="mobile-icon fa-solid fa-circle-half-stroke"></i>
+                    </button>
+
+                    <button id="btn-dashboard-history" class="text-toggle-btn icon-switch-btn" title="History">
+                        <span class="desktop-text">History</span>
+                        <i class="mobile-icon fa-solid fa-clock-rotate-left"></i>
+                    </button>
+
+                    <button id="btn-dashboard-bin" class="text-toggle-btn icon-switch-btn desktop-only-bin"
+                        title="Recycle Bin">
+                        <span class="desktop-text">Bin</span>
+                        <i class="mobile-icon fa-solid fa-trash-can"></i>
+                    </button>
+
+                    <button id="btn-logout" class="text-toggle-btn icon-switch-btn hidden" title="Logout">
+                        <span class="desktop-text">Logout</span>
+                        <i class="mobile-icon fa-solid fa-right-from-bracket"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="dashboard-content">
+                <p class="dash-subtitle">Pick up where you left off or start fresh.</p>
+                <div id="dashboard-cards" class="dash-grid"></div>
+
+                <div class="mobile-dash-actions mobile-only-section">
+                    <div id="btn-new-note-mob" class="mobile-action-card primary">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>New Note</span>
+                    </div>
+                    <div id="btn-open-bin-mob" class="mobile-action-card">
+                        <i class="fa-solid fa-trash-can"></i>
+                        <span>Bin</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-home" class="view-section hidden">
+            <header class="writer-header-new">
+                <div class="wh-left">
+                    <button id="btn-exit" class="btn-bordered-custom icon-switch-btn">
+                        <span class="desktop-text">Back</span>
+                        <i class="mobile-icon fa-solid fa-arrow-left"></i>
+                    </button>
+                </div>
+                <div class="wh-center">
+                    <input type="text" id="note-title" placeholder="Untitled Topic..." autocomplete="off">
+                </div>
+                <div class="wh-right">
+                    <button id="btn-open-templates" class="text-toggle-btn template-btn-desktop icon-switch-btn"
+                        title="Templates">
+                        <span class="desktop-text">Templates</span>
+                        <i class="mobile-icon fa-solid fa-layer-group"></i>
+                    </button>
+
+                    <button id="theme-toggle-writer" class="text-toggle-btn theme-btn-ref icon-switch-btn"
+                        title="Toggle Theme">
+                        <span class="theme-text-span desktop-text">Day</span>
+                        <i class="mobile-icon fa-solid fa-circle-half-stroke"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="writer-box">
+                <div class="meta-strip">
+                    <span id="current-date" class="meta-date">Date</span>
+                    <span class="meta-separator">•</span>
+                    <span id="word-count" class="word-badge">0 words</span>
+                </div>
+
+                <div class="writer-toolbar-container">
+                    <div id="toolbar-belt" class="toolbar-belt" style="scrollbar-width: none;">
+                        <button class="tool-btn color-btn" data-color="#000000" title="Black"
+                            style="background-color: #000000;"></button>
+                        <button class="tool-btn color-btn" data-color="#ffffff" title="White"
+                            style="background-color: #ffffff;"></button>
+                        <button class="tool-btn color-btn" data-color="#2563eb" title="Blue"
+                            style="background-color: #2563eb;"></button>
+                        <button class="tool-btn color-btn" data-color="#dc2626" title="Red"
+                            style="background-color: #dc2626;"></button>
+                        <button class="tool-btn color-btn" data-color="#16a34a" title="Green"
+                            style="background-color: #16a34a;"></button>
+                        <button class="tool-btn color-btn" data-color="#ea580c" title="Orange"
+                            style="background-color: #ea580c;"></button>
+
+                        <div class="divider-v"></div>
+
+                        <button class="tool-btn format-btn" data-cmd="insertUnorderedList" title="Bullets"><i
+                                class="fa-solid fa-list-ul"></i></button>
+                        <button class="tool-btn format-btn" data-cmd="insertOrderedList" title="Numbers"><i
+                                class="fa-solid fa-list-ol"></i></button>
+                        <button class="tool-btn format-btn" data-cmd="bold" title="Bold"><i
+                                class="fa-solid fa-bold"></i></button>
+                        <button class="tool-btn format-btn" data-cmd="italic" title="Italic"><i
+                                class="fa-solid fa-italic"></i></button>
+                        <button class="tool-btn format-btn" data-cmd="underline" title="Underline"><i
+                                class="fa-solid fa-underline"></i></button>
+
+                        <div class="divider-v"></div>
+
+                        <button class="tool-btn text-pill" style="background-color: #e3f2fd; color: #1565c0;"
+                            data-text="TODO: ">TODO</button>
+                        <button class="tool-btn text-pill" style="background-color: #fff8e1; color: #f57f17;"
+                            data-text="WIP: ">WIP</button>
+                        <button class="tool-btn text-pill" style="background-color: #e8f5e9; color: #2e7d32;"
+                            data-text="DONE: ">DONE</button>
+                        <button class="tool-btn text-pill" style="background-color: #f5f5f5; color: #616161;"
+                            data-text="HOLD: ">HOLD</button>
+
+                        <button class="tool-btn text-pill" style="background-color: #ffebee; color: #c62828;"
+                            data-text="URGENT: ">URGENT</button>
+                        <button class="tool-btn text-pill" style="background-color: #fbe9e7; color: #d84315;"
+                            data-text="IMP: ">IMP</button>
+
+                        <button class="tool-btn text-pill" style="background-color: #f3e5f5; color: #6a1b9a;"
+                            data-text="IDEA: ">IDEA</button>
+                        <button class="tool-btn text-pill" style="background-color: #e1f5fe; color: #0277bd;"
+                            data-text="NOTE: ">NOTE</button>
+                        <button class="tool-btn text-pill" style="background-color: #e0f2f1; color: #00695c;"
+                            data-text="Que: ">Que</button>
+                        <button class="tool-btn text-pill" style="background-color: #e8eaf6; color: #283593;"
+                            data-text="Ans: ">Ans</button>
+
+                        <button class="tool-btn text-pill" style="background-color: #fff3e0; color: #ef6c00;"
+                            data-text="FIX: ">FIX</button>
+                        <button class="tool-btn text-pill" style="background-color: #eceff1; color: #37474f;"
+                            data-text="DEBUG: ">DEBUG</button>
+                        <button class="tool-btn text-pill" style="background-color: #efebe9; color: #4e342e;"
+                            data-text="REVIEW: ">REVIEW</button>
+                    </div>
+                </div>
+
+                <div id="writer-area" class="rich-editor" contenteditable="true" spellcheck="false"
+                    data-placeholder="Just write..."></div>
+
+                <div class="writer-footer">
+                    <span id="save-status" class="status-text">Ready</span>
+                </div>
+            </div>
+        </section>
+
+        <section id="view-history" class="view-section hidden">
+            <header class="history-header">
+                <div class="header-left">
+                    <button id="btn-back-to-dashboard" class="btn-bordered-custom icon-switch-btn">
+                        <span class="desktop-text">Back</span>
+                        <i class="mobile-icon fa-solid fa-chevron-left"></i>
+                    </button>
+                </div>
+                <div class="header-center">
+                    <h2>All Notes</h2>
+                </div>
+                <div class="header-right history-actions-container">
+                    <button id="btn-select-mode" class="text-toggle-btn icon-switch-btn semi-square-mob">
+                        <span class="btn-label-text">Select</span>
+                    </button>
+
+                    <div id="bulk-actions-wrapper" class="bulk-actions-wrapper hidden">
+                        <button id="btn-export-selected"
+                            class="btn-bordered-custom icon-switch-btn semi-square-mob full-btn-mob">
+                            <span class="export-label-text">Export</span>
+                            <i class="mobile-icon fa-solid fa-file-arrow-down hidden-on-text-mode"></i>
+                        </button>
+
+                        <button id="btn-delete-selected"
+                            class="btn-delete icon-switch-btn semi-square-mob full-btn-mob">
+                            <span class="delete-label-text">Delete (<span id="selected-count">0</span>)</span>
+                            <i class="mobile-icon fa-solid fa-trash hidden-on-text-mode"></i>
+                        </button>
+                    </div>
+
+                    <button id="theme-toggle-history"
+                        class="text-toggle-btn theme-btn-ref icon-switch-btn mobile-hide-strict">
+                        <span class="theme-text-span desktop-text">Day</span>
+                        <i class="mobile-icon fa-solid fa-circle-half-stroke"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="history-body">
+                <div id="notes-grid" class="bento-grid"></div>
+                <div id="empty-history-msg" class="hidden">No saved notes found.</div>
+            </div>
+        </section>
+
+        <section id="view-bin" class="view-section hidden">
+            <header class="history-header">
+                <div class="header-left">
+                    <button id="btn-back-from-bin" class="btn-bordered-custom icon-switch-btn">
+                        <span class="desktop-text">Back</span>
+                        <i class="mobile-icon fa-solid fa-chevron-left"></i>
+                    </button>
+                </div>
+                <div class="header-center">
+                    <h2>Recycle Bin</h2>
+                </div>
+                <div class="header-right history-actions-container">
+                    <button id="btn-empty-bin" class="btn-delete icon-switch-btn semi-square-mob">
+                        <span class="desktop-text">Clear All</span>
+                        <i class="mobile-icon fa-solid fa-fire"></i>
+                    </button>
+                </div>
+            </header>
+
+            <div class="history-body">
+                <div id="bin-grid" class="bento-grid"></div>
+                <div id="empty-bin-msg" class="hidden"
+                    style="text-align:center; margin-top:20px; color:var(--text-muted);">
+                    Recycle bin is empty.
+                </div>
+            </div>
+        </section>
+
+        <div id="mobile-preview-overlay" class="preview-overlay hidden"></div>
+        <div id="mobile-preview-sheet" class="preview-sheet">
+            <div class="sheet-handle-bar"></div>
+            <div class="sheet-header">
+                <button id="sheet-close-btn" class="icon-btn-sheet"><i class="fa-solid fa-chevron-down"></i></button>
+                <div class="sheet-meta">
+                    <span id="sheet-date">Date</span>
+                </div>
+                <button id="sheet-edit-btn" class="icon-btn-sheet edit-action"><i
+                        class="fa-solid fa-pencil"></i></button>
+            </div>
+            <div class="sheet-content">
+                <h2 id="sheet-title">Note Title</h2>
+                <div id="sheet-body"></div>
             </div>
         </div>
     </div>
-    
-    <!-- To-Do App Page -->
-    <div class="app-container" id="appPage">
-        <header class="app-header">
-            <h1 class="header-title">My Tasks</h1>
-            <button class="logout-btn" id="logoutBtn">Logout</button>
-        </header>
-        
-        <main class="todo-main">
-            <form class="add-todo-form" id="addTodoForm">
-                <input type="text" class="add-todo-input" id="todoInput" placeholder="Add a new task..." required>
-                <button type="submit" class="add-todo-btn">Add</button>
-            </form>
-            
-            <div class="todo-list-container">
-                <h2 class="todo-list-title">Tasks</h2>
-                
-                <div id="emptyState" class="empty-state">
-                    <div class="empty-state-icon">📝</div>
-                    <p class="empty-state-text">No tasks yet. Add a task to get started!</p>
-                </div>
-                
-                <ul class="todo-list" id="todoList">
-                    <!-- To-do items will be added here dynamically -->
-                </ul>
-            </div>
-        </main>
-    </div>
 
-    <script>
-        // DOM Elements
-        const loginPage = document.getElementById('loginPage');
-        const appPage = document.getElementById('appPage');
-        const loginForm = document.getElementById('loginForm');
-        const usernameInput = document.getElementById('username');
-        const passwordInput = document.getElementById('password');
-        const loginError = document.getElementById('loginError');
-        const logoutBtn = document.getElementById('logoutBtn');
-        const addTodoForm = document.getElementById('addTodoForm');
-        const todoInput = document.getElementById('todoInput');
-        const todoList = document.getElementById('todoList');
-        const emptyState = document.getElementById('emptyState');
-
-        // Demo credentials
-        const DEMO_USER = 'user';
-        const DEMO_PASS = 'todo123';
-
-        // Check if user is already logged in
-        document.addEventListener('DOMContentLoaded', () => {
-            const isLoggedIn = localStorage.getItem('todoAppLoggedIn');
-            const savedTodos = localStorage.getItem('todoAppTasks');
-            
-            if (isLoggedIn === 'true') {
-                showAppPage();
-                
-                // Load saved todos
-                if (savedTodos) {
-                    const todos = JSON.parse(savedTodos);
-                    renderTodos(todos);
-                }
-            } else {
-                showLoginPage();
-            }
-        });
-
-        // Show login page
-        function showLoginPage() {
-            loginPage.style.display = 'flex';
-            appPage.style.display = 'none';
-            loginForm.reset();
-            loginError.style.display = 'none';
-        }
-
-        // Show app page
-        function showAppPage() {
-            loginPage.style.display = 'none';
-            appPage.style.display = 'flex';
-            todoInput.focus();
-        }
-
-        // Login form submission
-        loginForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const username = usernameInput.value.trim();
-            const password = passwordInput.value.trim();
-            
-            // Simple validation
-            if (username === DEMO_USER && password === DEMO_PASS) {
-                // Successful login
-                localStorage.setItem('todoAppLoggedIn', 'true');
-                showAppPage();
-            } else {
-                // Failed login
-                loginError.style.display = 'block';
-                passwordInput.value = '';
-                passwordInput.focus();
-            }
-        });
-
-        // Logout functionality
-        logoutBtn.addEventListener('click', () => {
-            localStorage.removeItem('todoAppLoggedIn');
-            showLoginPage();
-        });
-
-        // Get todos from localStorage
-        function getTodos() {
-            const todos = localStorage.getItem('todoAppTasks');
-            return todos ? JSON.parse(todos) : [];
-        }
-
-        // Save todos to localStorage
-        function saveTodos(todos) {
-            localStorage.setItem('todoAppTasks', JSON.stringify(todos));
-        }
-
-        // Render todos to the UI
-        function renderTodos(todos) {
-            // Clear the current list
-            todoList.innerHTML = '';
-            
-            // If no todos, show empty state
-            if (todos.length === 0) {
-                emptyState.style.display = 'block';
-                return;
-            }
-            
-            // Hide empty state
-            emptyState.style.display = 'none';
-            
-            // Render each todo item
-            todos.forEach((todo, index) => {
-                const todoItem = document.createElement('li');
-                todoItem.className = 'todo-item';
-                todoItem.innerHTML = `
-                    <input type="checkbox" class="todo-checkbox" id="todo-${index}" ${todo.completed ? 'checked' : ''}>
-                    <span class="todo-text ${todo.completed ? 'completed' : ''}">${todo.text}</span>
-                    <button class="delete-btn" data-index="${index}">×</button>
-                `;
-                
-                todoList.appendChild(todoItem);
-                
-                // Add event listener to checkbox
-                const checkbox = todoItem.querySelector('.todo-checkbox');
-                checkbox.addEventListener('change', () => toggleTodoComplete(index));
-                
-                // Add event listener to delete button
-                const deleteBtn = todoItem.querySelector('.delete-btn');
-                deleteBtn.addEventListener('click', () => deleteTodo(index));
-            });
-        }
-
-        // Add new todo
-        addTodoForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            
-            const text = todoInput.value.trim();
-            if (text === '') return;
-            
-            const todos = getTodos();
-            todos.push({ text, completed: false });
-            saveTodos(todos);
-            renderTodos(todos);
-            
-            // Clear input and focus
-            todoInput.value = '';
-            todoInput.focus();
-        });
-
-        // Toggle todo completion
-        function toggleTodoComplete(index) {
-            const todos = getTodos();
-            todos[index].completed = !todos[index].completed;
-            saveTodos(todos);
-            renderTodos(todos);
-        }
-
-        // Delete todo
-        function deleteTodo(index) {
-            const todos = getTodos();
-            todos.splice(index, 1);
-            saveTodos(todos);
-            renderTodos(todos);
-        }
-
-        // Initialize with some sample todos if none exist
-        window.addEventListener('load', () => {
-            const todos = getTodos();
-            if (todos.length === 0) {
-                const sampleTodos = [
-                    { text: 'Create a new to-do app', completed: true },
-                    { text: 'Design in black and white', completed: true },
-                    { text: 'Make it mobile responsive', completed: false },
-                    { text: 'Test the login functionality', completed: false }
-                ];
-                saveTodos(sampleTodos);
-                
-                // If user is logged in, render the sample todos
-                if (localStorage.getItem('todoAppLoggedIn') === 'true') {
-                    renderTodos(sampleTodos);
-                }
-            }
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
+
 </html>
