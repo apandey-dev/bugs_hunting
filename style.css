@@ -1,3 +1,4 @@
+/* FULL CSS FILE START */
 /* CSS CUSTOM PROPERTIES FOR THEME SYSTEM */
 :root {
     --bg-body: #e0e5ec;
@@ -275,7 +276,6 @@ button {
     font-size: 1.8rem;
     text-align: center;
     padding-right: 40px;
-    /* Space for close button */
 }
 
 /* EXPORT BUTTON STYLES */
@@ -980,7 +980,6 @@ p {
     box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
     scrollbar-width: thin;
     scrollbar-color: var(--text-muted) transparent;
-    /* FIX: Force scrolling to work */
     -webkit-overflow-scrolling: touch;
     overscroll-behavior-x: contain;
 }
@@ -1238,7 +1237,6 @@ p {
         overflow-y: auto;
     }
 
-    /* MOBILE TEXT UTILITY CLASSES */
     .desktop-text {
         display: none !important;
     }
@@ -1269,12 +1267,10 @@ p {
         display: none !important;
     }
 
-    /* HIDE TEMPLATE BUTTON ON MOBILE */
     .template-btn-desktop {
         display: none !important;
     }
 
-    /* MODAL CLOSE BUTTON FOR MOBILE */
     .modal-close-btn {
         top: 15px;
         right: 15px;
@@ -1288,7 +1284,6 @@ p {
         padding-right: 35px;
     }
 
-    /* MOBILE BUTTON ADJUSTMENTS */
     .text-toggle-btn,
     .btn-bordered-custom,
     .btn-delete,
@@ -1303,7 +1298,6 @@ p {
         align-items: center;
     }
 
-    /* MOBILE DASHBOARD LAYOUT */
     .dashboard-mobile-layout {
         flex-direction: column !important;
         align-items: flex-start !important;
@@ -1332,7 +1326,6 @@ p {
         border-radius: 14px !important;
     }
 
-    /* MOBILE WRITER VIEW REDESIGN */
     .writer-header-new {
         padding-bottom: 10px;
         margin-bottom: 10px;
@@ -1383,7 +1376,6 @@ p {
         flex: 1;
     }
 
-    /* MOBILE TOOLBAR - ALWAYS VISIBLE */
     .writer-toolbar-container {
         position: static !important;
         width: 100% !important;
@@ -1404,7 +1396,6 @@ p {
         display: none !important;
     }
 
-    /* MOBILE TOOLBAR BELT */
     .toolbar-belt {
         flex-direction: row;
         width: 100% !important;
@@ -1433,7 +1424,6 @@ p {
         visibility: visible !important;
     }
 
-    /* MOBILE TOOL BUTTONS */
     .tool-btn {
         width: 40px;
         height: 40px;
@@ -1467,12 +1457,10 @@ p {
         margin: 0 6px;
     }
 
-    /* MOBILE WRITER FOOTER */
     .writer-footer {
         display: none;
     }
 
-    /* MOBILE RECYCLE BIN HEADER FIXES */
     #view-bin .history-header {
         display: flex;
         flex-wrap: nowrap;
@@ -1530,7 +1518,6 @@ p {
         display: none !important;
     }
 
-    /* MOBILE RECYCLE BIN CARDS */
     #view-bin .note-card {
         padding: 16px;
         border-radius: 18px;
@@ -1552,7 +1539,6 @@ p {
         opacity: 0.8;
     }
 
-    /* RECYCLE BIN ACTION BUTTONS */
     #view-bin .note-card .bin-actions {
         display: flex;
         gap: 10px;
@@ -1602,7 +1588,6 @@ p {
         font-size: 0.9rem;
     }
 
-    /* MOBILE SHEET COMPONENTS */
     .sheet-handle-bar {
         width: 40px;
         height: 4px;
@@ -1675,14 +1660,12 @@ p {
         border-color: var(--accent-color);
     }
 
-    /* VIEW TRANSITIONS */
     ::view-transition-old(root),
     ::view-transition-new(root) {
         animation: none;
         mix-blend-mode: normal;
     }
 
-    /* MOBILE HISTORY HEADER ADJUSTMENTS */
     .history-header {
         display: flex;
         flex-wrap: wrap;
@@ -1729,7 +1712,6 @@ p {
         display: none !important;
     }
 
-    /* MOBILE BUTTON SHAPES */
     .semi-square-mob {
         width: auto !important;
         height: auto !important;
@@ -1765,7 +1747,6 @@ p {
         display: none !important;
     }
 
-    /* MOBILE INTRODUCTION VIEW */
     .hero-content {
         flex-direction: column-reverse;
         gap: 30px;
@@ -1790,7 +1771,6 @@ p {
         display: block;
     }
 
-    /* MOBILE DASHBOARD GRID */
     .dash-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -1812,7 +1792,6 @@ p {
         display: block;
     }
 
-    /* MOBILE ACTION BUTTONS SECTION */
     .mobile-only-section {
         display: flex !important;
     }
@@ -1855,12 +1834,10 @@ p {
         margin-bottom: 8px;
     }
 
-    /* HIDE DESKTOP NEW CARD ON MOBILE */
     .dash-card-new {
         display: none !important;
     }
 
-    /* MOBILE HISTORY GRID */
     .bento-grid {
         grid-template-columns: 1fr 1fr;
         gap: 3dvw;
@@ -1872,7 +1849,6 @@ p {
         border-radius: 18px;
     }
 
-    /* MOBILE APP HEADER */
     .app-header {
         margin-bottom: 2dvh;
     }
@@ -1881,12 +1857,10 @@ p {
         font-size: 1.6rem;
     }
 
-    /* UTILITY CLASSES FOR BIN BUTTON */
     .desktop-only-bin {
         display: none !important;
     }
 
-    /* MOBILE ABOUT PAGE STYLES */
     .info-panel {
         position: fixed;
         top: 0;
@@ -2057,7 +2031,6 @@ p {
         height: 40px;
     }
 
-    /* VERY SMALL SCREEN ADJUSTMENTS */
     #view-bin .history-header {
         gap: 5px;
     }
@@ -2077,7 +2050,6 @@ p {
         font-size: 1.3rem;
     }
 
-    /* MOBILE TOOLBAR FOR VERY SMALL SCREENS */
     .toolbar-belt {
         height: 50px;
         padding: 6px 10px !important;
@@ -2100,7 +2072,6 @@ p {
         font-size: 0.65rem;
     }
 
-    /* MODAL CLOSE BUTTON FOR VERY SMALL SCREENS */
     .modal-close-btn {
         top: 12px;
         right: 12px;
@@ -2114,7 +2085,6 @@ p {
         padding-right: 30px;
     }
 
-    /* ABOUT PAGE FOR SMALL SCREENS */
     .about-grid {
         grid-template-columns: 1fr;
         gap: 12px;
@@ -2149,13 +2119,11 @@ p {
         display: none !important;
     }
 
-    /* SHOW TEMPLATE BUTTON ON DESKTOP */
     .template-btn-desktop {
         display: flex !important;
         margin-right: 6px;
     }
 
-    /* HIDE MOBILE ACTIONS ON DESKTOP */
     .mobile-only-section {
         display: none !important;
     }
@@ -2164,19 +2132,16 @@ p {
         display: flex !important;
     }
 
-    /* DESKTOP RECYCLE BIN HEADER */
     #view-bin .history-header {
         display: flex;
         justify-content: space-between;
         align-items: center;
     }
 
-    /* DESKTOP RECYCLE BIN CARDS */
     #view-bin .note-card .bin-actions {
         display: none;
     }
 
-    /* DESKTOP WRITER FOOTER */
     .writer-footer {
         flex-direction: row;
         align-items: center;
@@ -2185,7 +2150,6 @@ p {
         min-height: 55px;
     }
 
-    /* DESKTOP TOOLBAR BELT - FIXED WITH SCROLL WORKING */
     .writer-toolbar-container {
         position: absolute;
         top: 400px;
@@ -2194,11 +2158,9 @@ p {
         max-width: 800px;
         margin: 0 auto;
         height: 60px;
-        /* ADDED HEIGHT */
         z-index: 100;
     }
 
-    /* MAIN FIX: TOOLBAR BELT WITH PROPER SCROLLING */
     .toolbar-belt {
         max-width: 800px;
         width: 100%;
@@ -2216,15 +2178,10 @@ p {
         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
         display: flex;
         align-items: center;
-        /* Ensure scroll works */
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior-x: contain;
-        /* Scrollbar styling */
         scrollbar-width: thin;
         scrollbar-color: var(--text-muted) transparent;
     }
 
-    /* Toolbar belt scrollbar styling for desktop */
     .toolbar-belt::-webkit-scrollbar {
         height: 6px;
     }
@@ -2255,7 +2212,6 @@ p {
         font-size: 0.8rem;
     }
 
-    /* WRITER BOX FOR MAXIMUM SPACE */
     .writer-box {
         padding: 0.6rem 0;
     }
@@ -2264,17 +2220,14 @@ p {
         margin-bottom: 0.6rem;
     }
 
-    /* APP CONTAINER PADDING OPTIMIZATION */
     .app-container {
         padding: 2rem 2.5rem;
     }
 
-    /* DASHBOARD BUTTONS */
     .dash-buttons-row {
         gap: 12px;
     }
 
-    /* DESKTOP ABOUT PAGE */
     .info-panel {
         position: absolute;
         top: 0;
@@ -2432,7 +2385,6 @@ p {
     }
 }
 
-/* INFO/ABOUT PANEL STYLES */
 .preview-overlay {
     position: fixed;
     top: 0;
@@ -2468,14 +2420,12 @@ p {
     transform: translateY(0);
 }
 
-/* VIEW TRANSITIONS */
 ::view-transition-old(root),
 ::view-transition-new(root) {
     animation: none;
     mix-blend-mode: normal;
 }
 
-/* PAGE LOADER ANIMATION */
 .page-loader {
     position: absolute;
     top: 0;
@@ -2493,8 +2443,6 @@ p {
     transform: translateY(0);
 }
 
-
-/* NEW AUTH MODAL STYLES */
 .auth-box {
     max-width: 420px;
     padding: 2.5rem;
@@ -2599,7 +2547,6 @@ p {
     border-radius: 14px !important;
 }
 
-/* GUEST MODAL STYLES */
 .guest-box {
     max-width: 380px;
     padding: 2.5rem;
@@ -2630,7 +2577,6 @@ p {
     padding: 14px;
 }
 
-/* THEME GUEST CONTAINER */
 .theme-guest-container {
     display: flex;
     gap: 10px;
@@ -2658,7 +2604,6 @@ p {
     transform: translateY(-2px);
 }
 
-/* FORM ERROR STYLES */
 .error-text {
     color: var(--danger-color);
     font-size: 0.9rem;
@@ -2668,7 +2613,6 @@ p {
     min-height: 20px;
 }
 
-/* RESPONSIVE STYLES FOR AUTH MODAL */
 @media (max-width: 768px) {
     .auth-box {
         max-width: 90%;
@@ -2726,7 +2670,6 @@ p {
     }
 }
 
-/* SCROLLBAR FOR AUTH FORM */
 .auth-form::-webkit-scrollbar {
     width: 6px;
 }
@@ -2745,3 +2688,265 @@ p {
 .auth-form::-webkit-scrollbar-thumb:hover {
     background: var(--accent-color);
 }
+
+#btn-logout {
+    border-color: var(--border-color);
+    color: var(--text-main);
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+#btn-logout:hover {
+    background-color: var(--danger-color);
+    border-color: var(--danger-color);
+    color: #ffffff;
+    transform: translateY(-2px);
+}
+
+#btn-logout i {
+    font-size: 1rem;
+}
+
+.dash-buttons-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+@media (max-width: 768px) {
+    #btn-logout.text-toggle-btn {
+        width: 44px;
+        height: 44px;
+        border-radius: 50%;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    #btn-logout .mobile-icon {
+        display: block;
+        font-size: 1.1rem;
+    }
+}
+
+/* ========= IMPROVEMENTS & POLISH ========= */
+
+/* Desktop auth form layout and spacing optimization */
+@media (min-width: 769px) {
+    .auth-box {
+        max-width: 480px !important;
+        /* Proper width for desktop visual balance */
+        padding: 4rem 3.5rem !important;
+        /* Balanced internal white-space */
+        border-radius: 35px !important;
+        background: rgba(255, 255, 255, 0.96) !important;
+        backdrop-filter: blur(12px) !important;
+        border: 1px solid rgba(0, 0, 0, 0.08) !important;
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12) !important;
+        animation: desktopSlideIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    .dark .auth-box {
+        background: rgba(20, 20, 20, 0.94) !important;
+        border: 1px solid rgba(255, 255, 255, 0.06) !important;
+    }
+
+    /* Professional hierarchy for the nav tabs */
+    .auth-nav {
+        margin-bottom: 3.5rem !important;
+        height: 60px !important;
+        background: var(--bg-body) !important;
+        padding: 6px !important;
+    }
+
+    .auth-nav-btn {
+        font-size: 1.05rem !important;
+        letter-spacing: 0.2px !important;
+        transition: all 0.3s ease !important;
+    }
+
+    /* Input focus and alignment polish */
+    .auth-form {
+        gap: 1.8rem !important;
+        /* Clean vertical spacing between fields */
+    }
+
+    .auth-input {
+        height: 62px !important;
+        /* Comfortable typing area */
+        font-size: 1.1rem !important;
+        border-radius: 14px !important;
+        border: 2px solid transparent !important;
+        background: var(--bg-body) !important;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+
+    .auth-input:focus {
+        background: var(--bg-container) !important;
+        border-color: var(--accent-color) !important;
+        box-shadow: 0 8px 20px rgba(95, 106, 212, 0.08) !important;
+        transform: translateY(-1px);
+    }
+
+    /* Auth status and feedback message clarity */
+    .error-text {
+        margin-top: 1rem !important;
+        padding: 16px 20px !important;
+        border-radius: 14px !important;
+        background: rgba(255, 71, 87, 0.08) !important;
+        font-size: 0.95rem !important;
+        border-left: 5px solid var(--danger-color) !important;
+        transition: all 0.3s ease;
+    }
+
+    .error-text[style*="success"] {
+        background: rgba(16, 185, 129, 0.08) !important;
+        border-left: 5px solid var(--success-color) !important;
+    }
+
+    /* Button hover states and feedback */
+    .auth-modal-actions {
+        padding-top: 2.5rem !important;
+        gap: 1.5rem !important;
+    }
+
+    .auth-modal-actions button {
+        height: 62px !important;
+        font-size: 1.15rem !important;
+        border-radius: 18px !important;
+    }
+
+    #auth-proceed:hover {
+        transform: translateY(-3px) scale(1.02) !important;
+        box-shadow: 0 15px 30px rgba(95, 106, 212, 0.35) !important;
+    }
+
+    #auth-cancel:hover {
+        background: var(--bg-body) !important;
+        color: var(--danger-color) !important;
+        border-color: var(--danger-color) !important;
+    }
+
+    @keyframes desktopSlideIn {
+        from {
+            opacity: 0;
+            transform: translateY(40px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+}
+
+/* ========= MOBILE IMPROVEMENTS ========= */
+
+/* Full optimization for small screen touch interactions */
+@media (max-width: 768px) {
+
+    /* Container breathing room and edge handling */
+    .auth-box {
+        width: 92% !important;
+        padding: 2.5rem 1.8rem !important;
+        /* Comfort padding to remove cramped feel */
+        border-radius: 30px !important;
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1) !important;
+    }
+
+    /* High-visibility Navigation for Mobile thumbs */
+    .auth-nav {
+        margin-bottom: 2.5rem !important;
+        height: 56px !important;
+        padding: 6px !important;
+    }
+
+    .auth-nav-btn {
+        font-size: 0.95rem !important;
+        font-weight: 700 !important;
+    }
+
+    /* Mobile signup input touch optimization and row spacing */
+    .auth-form {
+        gap: 1.4rem !important;
+        /* Resolves "dab-daba" squeezed effect */
+        overflow-y: visible !important;
+        margin-bottom: 2.2rem !important;
+    }
+
+    .auth-input {
+        height: 58px !important;
+        /* Optimal touch target size */
+        font-size: 16px !important;
+        /* Prevents unwanted iOS browser auto-zoom */
+        border-radius: 16px !important;
+        padding: 0 20px !important;
+        border: 2px solid rgba(0, 0, 0, 0.08) !important;
+        background: var(--bg-card) !important;
+    }
+
+    .dark .auth-input {
+        border-color: rgba(255, 255, 255, 0.1) !important;
+    }
+
+    .auth-input:focus {
+        border-color: var(--accent-color) !important;
+        background: var(--bg-container) !important;
+        transform: translateY(-2px);
+    }
+
+    /* Mobile alert-style error and success feedback */
+    .error-text {
+        margin-top: 0.4rem !important;
+        padding: 14px 18px !important;
+        background: rgba(255, 71, 87, 0.08) !important;
+        border-radius: 12px !important;
+        border-left: 4px solid var(--danger-color) !important;
+        line-height: 1.5 !important;
+        font-weight: 500 !important;
+    }
+
+    .error-text[style*="success"] {
+        background: rgba(16, 185, 129, 0.08) !important;
+        border-left: 4px solid var(--success-color) !important;
+    }
+
+    /* Stacking buttons for easier vertical reachability */
+    .auth-modal-actions {
+        flex-direction: column !important;
+        /* Natural vertical flow for mobile */
+        gap: 14px !important;
+        padding-top: 1.5rem !important;
+        border-top: 1px solid var(--bg-circle) !important;
+    }
+
+    .auth-modal-actions button {
+        height: 58px !important;
+        font-size: 1.1rem !important;
+        border-radius: 18px !important;
+        width: 100% !important;
+    }
+
+    #auth-proceed {
+        order: 1;
+        /* Primary action is most reachable */
+        box-shadow: 0 8px 25px rgba(95, 106, 212, 0.25) !important;
+    }
+
+    #auth-cancel {
+        order: 2;
+        /* Secondary action placed below */
+        border: none !important;
+        background: transparent !important;
+        opacity: 0.7 !important;
+        font-weight: 500 !important;
+    }
+
+    /* Touch Feedback */
+    .auth-nav-btn:active,
+    #auth-proceed:active {
+        transform: scale(0.96) !important;
+    }
+}
+
+/* FULL CSS FILE END */

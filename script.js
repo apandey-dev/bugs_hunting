@@ -1,18 +1,18 @@
 // APPLICATION CONSTANTS AND CONFIGURATION
 const SUPABASE_URL = 'https://trpigpfligemnmeybhmw.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRycGlncGZsaWdlbW5tZXliaG13Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjYzMTcyOTcsImV4cCI6MjA4MTg5MzI5N30.DPKrT9KPMHKxejTcE-8M9I1pPH9aF6QjTWdPI_pNPRkapikey';
+const SUPABASE_KEY = 'sb_publishable_1bfggo8H4aMiRNw3ijUU_Q_39PnQeT1';
 
 // Initialize Supabase client safely
 let supabaseClient = null;
 try {
     if (window.supabase) {
         supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-        console.log("Supabase client initialized successfully");
+        console.log("DEBUG: Supabase client initialized successfully");
     } else {
-        console.error("Supabase library not loaded");
+        console.error("DEBUG: Supabase library not loaded in window object");
     }
 } catch (error) {
-    console.error("Error initializing Supabase:", error);
+    console.error("DEBUG: Error during Supabase initialization:", error);
 }
 
 // GLOBAL STATE MANAGEMENT
@@ -951,7 +951,7 @@ function validateSignupForm() {
 }
 
 // ────────────────────────────────────────────────────────
-// SUPABASE AUTHENTICATION INTEGRATION
+// SUPABASE AUTHENTICATION INTEGRATION (FIXED & DEBUGGED)
 // ────────────────────────────────────────────────────────
 
 async function handleLogin() {
@@ -959,12 +959,14 @@ async function handleLogin() {
 
     const email = loginEmailInput.value.trim();
     const password = loginPasswordInput.value;
-    const username = loginUsernameInput ? loginUsernameInput.value.trim() : email.split('@')[0];
 
-    if (loginError) loginError.textContent = "Logging in...";
-    if (loginError) loginError.classList.remove('hidden');
+    if (loginError) {
+        loginError.textContent = "Verifying credentials...";
+        loginError.classList.remove('hidden');
+    }
 
     try {
+        console.log("DEBUG: Attempting login for", email);
         const { data, error } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: password,
@@ -972,28 +974,33 @@ async function handleLogin() {
 
         if (error) throw error;
 
+        console.log("DEBUG: Login successful", data.user);
         currentUser = data.user;
         isGuestMode = false;
         localStorage.setItem('isGuestMode', 'false');
         localStorage.setItem('ghost_user', JSON.stringify(currentUser));
 
-        hideAuthModal();
+        // Display success status
+        loginError.textContent = "Login Successful!";
+        loginError.style.color = "var(--success-color)";
 
-        // Update UI
-        if (btnLogout) btnLogout.classList.remove('hidden');
-        handleGridClass(true);
+        setTimeout(async () => {
+            hideAuthModal();
+            // Fetch real cloud notes before dashboard transition
+            await fetchNotesFromCloud();
+            // Go to dashboard
+            if (pageLoader) pageLoader.dataset.init = "true";
+            switchView('dashboard');
 
-        // Fetch real cloud notes
-        await fetchNotesFromCloud();
-
-        // Go to dashboard
-        if (pageLoader) pageLoader.dataset.init = "true";
-        switchView('dashboard');
+            // Ensure Logout is visible
+            if (btnLogout) btnLogout.classList.remove('hidden');
+        }, 800);
 
     } catch (error) {
-        console.error("Login error:", error);
+        console.error("DEBUG: Login error caught", error);
         if (loginError) {
-            loginError.textContent = error.message || "Login failed. Please try again.";
+            loginError.textContent = error.message || "Invalid credentials.";
+            loginError.style.color = "var(--danger-color)";
             loginError.classList.remove('hidden');
         }
     }
@@ -1005,10 +1012,13 @@ async function handleSignup() {
     const email = signupEmailInput.value.trim();
     const password = signupPasswordInput.value;
 
-    if (signupError) signupError.textContent = "Creating account...";
-    if (signupError) signupError.classList.remove('hidden');
+    if (signupError) {
+        signupError.textContent = "Creating account... Please wait.";
+        signupError.classList.remove('hidden');
+    }
 
     try {
+        console.log("DEBUG: Attempting signup for", email);
         const { data, error } = await supabaseClient.auth.signUp({
             email: email,
             password: password,
@@ -1016,13 +1026,23 @@ async function handleSignup() {
 
         if (error) throw error;
 
-        alert("Check your email for the confirmation link!");
-        switchAuthMode('login');
+        // If data.session is null, it means email confirmation is required
+        if (data.user && !data.session) {
+            console.log("DEBUG: Signup success, confirmation required.");
+            signupError.textContent = "Verification email sent! Check your inbox.";
+            signupError.style.color = "var(--accent-color)";
+        } else {
+            console.log("DEBUG: Signup success, session created.");
+            signupError.textContent = "Account created successfully!";
+            signupError.style.color = "var(--success-color)";
+            setTimeout(() => switchAuthMode('login'), 1500);
+        }
 
     } catch (error) {
-        console.error("Signup error:", error);
+        console.error("DEBUG: Signup error caught", error);
         if (signupError) {
-            signupError.textContent = error.message || "Signup failed. Please try again.";
+            signupError.textContent = error.message || "Signup failed.";
+            signupError.style.color = "var(--danger-color)";
             signupError.classList.remove('hidden');
         }
     }
@@ -1433,24 +1453,26 @@ function handleGridClass(isLoggedIn) {
 
 async function checkSession() {
     if (!supabaseClient) {
-        console.log("Supabase client not available, running in offline mode");
+        console.log("DEBUG: Supabase client not available, running in offline mode");
         return;
     }
 
     try {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
+            console.log("DEBUG: Existing session found", session.user.email);
             currentUser = session.user;
             if (btnLogout) btnLogout.classList.remove('hidden');
             handleGridClass(true);
             await fetchNotesFromCloud();
         } else {
+            console.log("DEBUG: No existing session found");
             currentUser = null;
             if (btnLogout) btnLogout.classList.add('hidden');
             handleGridClass(false);
         }
     } catch (err) {
-        console.error("Session check failed", err);
+        console.error("DEBUG: Session check failed", err);
         currentUser = null;
         if (btnLogout) btnLogout.classList.add('hidden');
         handleGridClass(false);
@@ -1476,39 +1498,58 @@ async function syncOfflineNotesToCloud(userName) {
             if (saveStatus) saveStatus.innerText = "Ready";
         }, 3000);
     } catch (error) {
-        console.error("Error syncing notes:", error);
+        console.error("DEBUG: Error syncing notes:", error);
         if (saveStatus) saveStatus.innerText = "Sync failed";
     }
 }
 
+// ────────────────────────────────────────────────────────
+// LOGOUT INTEGRATION (CORE FEATURE)
+// ────────────────────────────────────────────────────────
+
 async function handleLogout() {
-    if (!supabaseClient) {
-        currentUser = null;
-        isGuestMode = false;
-        notes = [];
-        localStorage.removeItem('ghostNotes');
-        localStorage.removeItem('ghostLastView');
-        localStorage.removeItem('ghost_offline_user');
-        localStorage.removeItem('isGuestMode');
-        localStorage.removeItem('ghost_user');
-        window.location.reload();
-        return;
-    }
+    // Show Loading in saveStatus if available
+    if (saveStatus) saveStatus.innerText = "Logging out...";
 
     try {
-        await supabaseClient.auth.signOut();
+        if (supabaseClient) {
+            await supabaseClient.auth.signOut();
+        }
+        console.log("DEBUG: Supabase SignOut Complete");
     } catch (error) {
-        console.error("Logout error:", error);
+        console.error("DEBUG: Logout error:", error);
     } finally {
+        // Clear all states
         currentUser = null;
         isGuestMode = false;
         notes = [];
+
+        // Clear Persisted Storage
         localStorage.removeItem('ghostNotes');
         localStorage.removeItem('ghostLastView');
         localStorage.removeItem('ghost_offline_user');
         localStorage.removeItem('isGuestMode');
         localStorage.removeItem('ghost_user');
-        window.location.reload();
+
+        // Show Success Feedback
+        if (loginError) {
+            loginError.textContent = "Logged out successfully";
+            loginError.style.color = "var(--success-color)";
+            loginError.classList.remove('hidden');
+        }
+
+        // Return to intro/login state
+        if (pageLoader) pageLoader.dataset.init = "true";
+        switchView('intro');
+
+        // Final UI cleanup
+        if (btnLogout) btnLogout.classList.add('hidden');
+        handleGridClass(false);
+
+        // Optional: Force reload to ensure fresh memory state
+        setTimeout(() => {
+            window.location.reload();
+        }, 1500);
     }
 }
 
@@ -1518,7 +1559,7 @@ async function handleLogout() {
 
 async function fetchNotesFromCloud() {
     if (!currentUser || !supabaseClient) {
-        console.log("Not fetching from cloud: No user or supabase client");
+        console.log("DEBUG: Not fetching from cloud: No user or supabase client");
         return;
     }
     if (saveStatus) saveStatus.innerText = "Syncing from Cloud...";
@@ -1528,12 +1569,15 @@ async function fetchNotesFromCloud() {
             .select('*')
             .eq('user_id', currentUser.id)
             .order('timestamp', { ascending: false });
+
         if (error) {
-            console.error("Error fetching notes:", error);
+            console.error("DEBUG: Error fetching notes:", error);
             if (saveStatus) saveStatus.innerText = "Offline Mode";
             return;
         }
-        if (data && data.length > 0) {
+
+        if (data) {
+            console.log("DEBUG: Successfully fetched notes from cloud", data.length);
             const cloudNotes = data.map(n => ({
                 id: parseInt(n.local_id) || Date.now(),
                 title: n.title,
@@ -1573,7 +1617,7 @@ async function fetchNotesFromCloud() {
             }, 2000);
         }
     } catch (err) {
-        console.error("Fetch notes error:", err);
+        console.error("DEBUG: Fetch notes error:", err);
         if (saveStatus) saveStatus.innerText = "Sync failed";
     }
 }
@@ -1587,11 +1631,12 @@ async function saveNoteToCloud(note) {
     }
     if (saveStatus) saveStatus.innerText = "Uploading to Cloud...";
     try {
+        console.log("DEBUG: Upserting note to cloud", note.id);
         const { error } = await supabaseClient
             .from('notes')
             .upsert({
                 user_id: currentUser.id,
-                local_id: note.id.toString(),
+                local_id: note.id.toString(), // Convert number ID to string for DB
                 title: note.title,
                 content: note.content,
                 date: note.date,
@@ -1601,8 +1646,9 @@ async function saveNoteToCloud(note) {
             }, {
                 onConflict: 'user_id, local_id'
             });
+
         if (error) {
-            console.error("Save to cloud error:", error);
+            console.error("DEBUG: Save to cloud error:", error);
             if (saveStatus) saveStatus.innerText = "Save Failed (Local Only)";
             note.synced = false;
         } else {
@@ -1610,7 +1656,7 @@ async function saveNoteToCloud(note) {
             note.synced = true;
         }
     } catch (err) {
-        console.error("Save note error:", err);
+        console.error("DEBUG: Save note error:", err);
         if (saveStatus) saveStatus.innerText = "Network Error";
         note.synced = false;
     }
@@ -1626,10 +1672,10 @@ async function deleteNotesFromCloud(idsToDelete) {
             .in('local_id', ids)
             .eq('user_id', currentUser.id);
         if (error) {
-            console.error("Delete from cloud error:", error);
+            console.error("DEBUG: Delete from cloud error:", error);
         }
     } catch (err) {
-        console.error("Delete notes error:", err);
+        console.error("DEBUG: Delete notes error:", err);
     }
 }
 
@@ -2158,7 +2204,7 @@ function initEventListeners() {
     if (btnSelectMode) btnSelectMode.addEventListener('click', () => toggleSelectionMode());
     if (btnDeleteSelected) btnDeleteSelected.addEventListener('click', deleteSelectedNotes);
 
-    // Logout
+    // Logout - ATTACHED TO NEW LOGOUT HANDLER
     if (btnLogout) btnLogout.addEventListener('click', handleLogout);
 
     // Auto-save
@@ -2242,13 +2288,15 @@ function initEventListeners() {
 }
 
 async function initApp() {
-    console.log("Initializing Ghost Writer App...");
+    console.log("DEBUG: Initializing Ghost Writer App...");
     loadTheme();
     initThemeToggle();
     initTemplateModal();
     initToolbar();
     initEditorPasteHandler();
     initEventListeners();
+
+    // Check session before setting UI state
     await checkSession();
 
     // Check if user is already logged in or in guest mode
@@ -2286,7 +2334,7 @@ async function initApp() {
         toolbarBelt.style.display = 'flex';
     }
 
-    console.log("App initialization complete");
+    console.log("DEBUG: App initialization complete");
 }
 
 if (document.readyState === 'loading') {
