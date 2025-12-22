@@ -1,8 +1,8 @@
 // APPLICATION CONSTANTS AND CONFIGURATION
-const SUPABASE_URL = 'https://trpigpfligemnmeybhmw.supabase.co';
-const SUPABASE_KEY = 'sb_publishable_1bfggo8H4aMiRNw3ijUU_Q_39PnQeT1';
+const SUPABASE_URL = 'https://zzxbkptpiyjvoiycwvla.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_knj-9ayd95yg8KPby4_K_w_OgQmn_bI';
 
-// Initialize Supabase client safely
+// Initialize Supabase client safely - Initialized only once
 let supabaseClient = null;
 try {
     if (window.supabase) {
@@ -701,13 +701,12 @@ const authModal = document.getElementById('auth-modal');
 const authNavBtns = document.querySelectorAll('.auth-nav-btn');
 const loginForm = document.getElementById('login-form');
 const signupForm = document.getElementById('signup-form');
-const loginUsernameInput = document.getElementById('login-username');
 const loginEmailInput = document.getElementById('login-email');
 const loginPasswordInput = document.getElementById('login-password');
 const loginError = document.getElementById('login-error');
+const signupUsernameInput = document.getElementById('signup-username');
 const signupEmailInput = document.getElementById('signup-email');
 const signupPasswordInput = document.getElementById('signup-password');
-const signupConfirmPasswordInput = document.getElementById('signup-confirm-password');
 const signupError = document.getElementById('signup-error');
 const authCancelBtn = document.getElementById('auth-cancel');
 const authProceedBtn = document.getElementById('auth-proceed');
@@ -856,7 +855,6 @@ function hideAuthModal() {
 function switchAuthMode(mode) {
     authMode = mode;
 
-    // Update navigation buttons
     authNavBtns.forEach(btn => {
         if (btn.dataset.mode === mode) {
             btn.classList.add('active');
@@ -865,28 +863,22 @@ function switchAuthMode(mode) {
         }
     });
 
-    // Update forms visibility
     if (mode === 'login') {
         loginForm.classList.add('active-form');
         signupForm.classList.remove('active-form');
-        if (loginUsernameInput) loginUsernameInput.focus();
     } else {
         loginForm.classList.remove('active-form');
         signupForm.classList.add('active-form');
-        if (signupEmailInput) signupEmailInput.focus();
     }
 }
 
 function resetAuthForms() {
-    // Clear inputs
-    if (loginUsernameInput) loginUsernameInput.value = '';
     if (loginEmailInput) loginEmailInput.value = '';
     if (loginPasswordInput) loginPasswordInput.value = '';
+    if (signupUsernameInput) signupUsernameInput.value = '';
     if (signupEmailInput) signupEmailInput.value = '';
     if (signupPasswordInput) signupPasswordInput.value = '';
-    if (signupConfirmPasswordInput) signupConfirmPasswordInput.value = '';
 
-    // Clear errors
     if (loginError) {
         loginError.textContent = '';
         loginError.classList.add('hidden');
@@ -918,9 +910,15 @@ function validateLoginForm() {
 }
 
 function validateSignupForm() {
+    const username = signupUsernameInput.value.trim();
     const email = signupEmailInput.value.trim();
     const password = signupPasswordInput.value;
-    const confirmPassword = signupConfirmPasswordInput.value;
+
+    if (!username) {
+        signupError.textContent = 'Username is required';
+        signupError.classList.remove('hidden');
+        return false;
+    }
 
     if (!email) {
         signupError.textContent = 'Email is required';
@@ -940,18 +938,12 @@ function validateSignupForm() {
         return false;
     }
 
-    if (password !== confirmPassword) {
-        signupError.textContent = 'Passwords do not match';
-        signupError.classList.remove('hidden');
-        return false;
-    }
-
     signupError.classList.add('hidden');
     return true;
 }
 
 // ────────────────────────────────────────────────────────
-// SUPABASE AUTHENTICATION INTEGRATION (FIXED & DEBUGGED)
+// SUPABASE AUTHENTICATION INTEGRATION
 // ────────────────────────────────────────────────────────
 
 async function handleLogin() {
@@ -960,13 +952,11 @@ async function handleLogin() {
     const email = loginEmailInput.value.trim();
     const password = loginPasswordInput.value;
 
-    if (loginError) {
-        loginError.textContent = "Verifying credentials...";
-        loginError.classList.remove('hidden');
-    }
+    loginError.textContent = "Authenticating...";
+    loginError.style.color = "var(--text-main)";
+    loginError.classList.remove('hidden');
 
     try {
-        console.log("DEBUG: Attempting login for", email);
         const { data, error } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: password,
@@ -974,77 +964,80 @@ async function handleLogin() {
 
         if (error) throw error;
 
-        console.log("DEBUG: Login successful", data.user);
         currentUser = data.user;
         isGuestMode = false;
         localStorage.setItem('isGuestMode', 'false');
         localStorage.setItem('ghost_user', JSON.stringify(currentUser));
 
-        // Display success status
-        loginError.textContent = "Login Successful!";
+        loginError.textContent = "Welcome back!";
         loginError.style.color = "var(--success-color)";
+
+        // Detect unsaved local notes (Section 4.1)
+        const unsavedLocal = notes.filter(n => !n.synced).length > 0;
+        if (unsavedLocal) {
+            console.log("DEBUG: Unsaved local notes found during login.");
+        }
+
+        // Sync local notes to cloud immediately upon login
+        await syncOfflineNotesToCloud();
 
         setTimeout(async () => {
             hideAuthModal();
-            // Fetch real cloud notes before dashboard transition
             await fetchNotesFromCloud();
-            // Go to dashboard
             if (pageLoader) pageLoader.dataset.init = "true";
             switchView('dashboard');
-
-            // Ensure Logout is visible
-            if (btnLogout) btnLogout.classList.remove('hidden');
+            if (btnLogout) {
+                btnLogout.classList.remove('hidden');
+                const span = btnLogout.querySelector('.desktop-text');
+                if (span) span.innerText = "Logout";
+            }
         }, 800);
 
     } catch (error) {
-        console.error("DEBUG: Login error caught", error);
-        if (loginError) {
-            loginError.textContent = error.message || "Invalid credentials.";
-            loginError.style.color = "var(--danger-color)";
-            loginError.classList.remove('hidden');
-        }
+        loginError.textContent = error.message;
+        loginError.style.color = "var(--danger-color)";
+        loginError.classList.remove('hidden');
     }
 }
 
 async function handleSignup() {
     if (!validateSignupForm()) return;
 
+    const username = signupUsernameInput.value.trim();
     const email = signupEmailInput.value.trim();
     const password = signupPasswordInput.value;
 
-    if (signupError) {
-        signupError.textContent = "Creating account... Please wait.";
-        signupError.classList.remove('hidden');
-    }
+    signupError.textContent = "Creating account...";
+    signupError.style.color = "var(--text-main)";
+    signupError.classList.remove('hidden');
 
     try {
-        console.log("DEBUG: Attempting signup for", email);
         const { data, error } = await supabaseClient.auth.signUp({
             email: email,
             password: password,
+            options: {
+                data: {
+                    display_name: username,
+                    username: username
+                }
+            }
         });
 
         if (error) throw error;
 
-        // If data.session is null, it means email confirmation is required
-        if (data.user && !data.session) {
-            console.log("DEBUG: Signup success, confirmation required.");
-            signupError.textContent = "Verification email sent! Check your inbox.";
+        if (data.user && data.session === null) {
+            signupError.textContent = "Verification email sent! Confirm to activate account.";
             signupError.style.color = "var(--accent-color)";
         } else {
-            console.log("DEBUG: Signup success, session created.");
             signupError.textContent = "Account created successfully!";
             signupError.style.color = "var(--success-color)";
             setTimeout(() => switchAuthMode('login'), 1500);
         }
 
     } catch (error) {
-        console.error("DEBUG: Signup error caught", error);
-        if (signupError) {
-            signupError.textContent = error.message || "Signup failed.";
-            signupError.style.color = "var(--danger-color)";
-            signupError.classList.remove('hidden');
-        }
+        signupError.textContent = error.message;
+        signupError.style.color = "var(--danger-color)";
+        signupError.classList.remove('hidden');
     }
 }
 
@@ -1073,22 +1066,22 @@ function handleGuestLogin() {
         return;
     }
 
-    // Save guest username
     localStorage.setItem('ghost_offline_user', username);
     localUserName = username;
 
-    // Set guest mode
     isGuestMode = true;
     localStorage.setItem('isGuestMode', 'true');
 
-    // Clear any existing user data
     currentUser = null;
     localStorage.removeItem('ghost_user');
 
-    // Hide modal and go to dashboard
     hideGuestModal();
 
-    if (btnLogout) btnLogout.classList.add('hidden');
+    if (btnLogout) {
+        btnLogout.classList.remove('hidden');
+        const span = btnLogout.querySelector('.desktop-text');
+        if (span) span.innerText = "Exit Guest";
+    }
     handleGridClass(false);
 
     if (saveStatus) saveStatus.innerText = `Guest: ${username}`;
@@ -1308,12 +1301,36 @@ function closeMobilePreview() {
 }
 
 // TOOLBAR FUNCTIONS
+// Fix: Section 2 - Copy-Paste Sanitization
 function initEditorPasteHandler() {
     if (writerArea) {
         writerArea.addEventListener('paste', (e) => {
             e.preventDefault();
-            const text = (e.clipboardData || window.clipboardData).getData('text');
-            document.execCommand('insertText', false, text);
+            const html = (e.clipboardData || window.clipboardData).getData('text/html');
+            const text = (e.clipboardData || window.clipboardData).getData('text/plain');
+            
+            if (html) {
+                const tempDiv = document.createElement('div');
+                tempDiv.innerHTML = html;
+                
+                // Sanitization loop
+                const allElements = tempDiv.querySelectorAll('*');
+                allElements.forEach(el => {
+                    // Rule 1: Strip background-color and editor-breaking styles
+                    el.style.backgroundColor = '';
+                    el.style.background = '';
+                    el.style.backgroundImage = '';
+                    el.style.position = '';
+                    el.style.float = '';
+                    
+                    // Maintain semantic formatting (Rule 2)
+                    // We allow color, font-weight (Bold), font-style (Italic), text-decoration (Underline)
+                });
+                
+                document.execCommand('insertHTML', false, tempDiv.innerHTML);
+            } else {
+                document.execCommand('insertText', false, text);
+            }
         });
     }
 }
@@ -1321,6 +1338,7 @@ function initEditorPasteHandler() {
 function applyColor(color) {
     if (!writerArea) return;
     writerArea.focus();
+    // Rule: Apply only to selected text (Section 1C)
     document.execCommand('styleWithCSS', false, true);
     document.execCommand('foreColor', false, color);
     saveCurrentNote();
@@ -1338,54 +1356,26 @@ function applyFormat(cmd) {
     if (!writerArea) return;
     writerArea.focus();
 
+    // Logic Fix: Section 1B - List Handling
     if (cmd === 'insertUnorderedList' || cmd === 'insertOrderedList') {
-        const isAlreadyActive = document.queryCommandState(cmd);
-        if (isAlreadyActive) {
-            document.execCommand(cmd, false, null);
-            if (cmd === 'insertUnorderedList') {
-                bulletListActive = false;
-            } else {
-                numberListActive = false;
-            }
-        } else {
-            if (cmd === 'insertUnorderedList' && document.queryCommandState('insertOrderedList')) {
+        const isCurrentBullet = document.queryCommandState('insertUnorderedList');
+        const isCurrentNumber = document.queryCommandState('insertOrderedList');
+        
+        if (cmd === 'insertUnorderedList') {
+            if (isCurrentNumber) {
+                // Clear the other type first to prevent inverted behavior
                 document.execCommand('insertOrderedList', false, null);
-                numberListActive = false;
-            } else if (cmd === 'insertOrderedList' && document.queryCommandState('insertUnorderedList')) {
-                document.execCommand('insertUnorderedList', false, null);
-                bulletListActive = false;
             }
-            document.execCommand(cmd, false, null);
-            if (cmd === 'insertUnorderedList') {
-                bulletListActive = true;
-            } else {
-                numberListActive = true;
+        } else if (cmd === 'insertOrderedList') {
+            if (isCurrentBullet) {
+                document.execCommand('insertUnorderedList', false, null);
             }
         }
-    } else {
-        document.execCommand(cmd, false, null);
     }
 
+    document.execCommand(cmd, false, null);
     saveCurrentNote();
-    formatBtns.forEach(btn => {
-        if (btn.getAttribute('data-cmd') === cmd) {
-            const isActive = document.queryCommandState(cmd);
-            btn.classList.toggle('active-tool', isActive);
-            if (cmd === 'insertUnorderedList') {
-                formatBtns.forEach(otherBtn => {
-                    if (otherBtn.getAttribute('data-cmd') === 'insertOrderedList') {
-                        otherBtn.classList.toggle('active-tool', false);
-                    }
-                });
-            } else if (cmd === 'insertOrderedList') {
-                formatBtns.forEach(otherBtn => {
-                    if (otherBtn.getAttribute('data-cmd') === 'insertUnorderedList') {
-                        otherBtn.classList.toggle('active-tool', false);
-                    }
-                });
-            }
-        }
-    });
+    updateFormatButtonStates();
 }
 
 function insertText(text) {
@@ -1453,7 +1443,7 @@ function handleGridClass(isLoggedIn) {
 
 async function checkSession() {
     if (!supabaseClient) {
-        console.log("DEBUG: Supabase client not available, running in offline mode");
+        console.log("DEBUG: Supabase client not available");
         return;
     }
 
@@ -1462,106 +1452,74 @@ async function checkSession() {
         if (session) {
             console.log("DEBUG: Existing session found", session.user.email);
             currentUser = session.user;
-            if (btnLogout) btnLogout.classList.remove('hidden');
+            isGuestMode = false;
+            localStorage.setItem('isGuestMode', 'false');
+            if (btnLogout) {
+                btnLogout.classList.remove('hidden');
+                const span = btnLogout.querySelector('.desktop-text');
+                if (span) span.innerText = "Logout";
+            }
             handleGridClass(true);
             await fetchNotesFromCloud();
         } else {
             console.log("DEBUG: No existing session found");
-            currentUser = null;
-            if (btnLogout) btnLogout.classList.add('hidden');
-            handleGridClass(false);
+            if (isGuestMode) {
+                if (btnLogout) {
+                    btnLogout.classList.remove('hidden');
+                    const span = btnLogout.querySelector('.desktop-text');
+                    if (span) span.innerText = "Exit Guest";
+                }
+                handleGridClass(false);
+            } else {
+                currentUser = null;
+                if (btnLogout) btnLogout.classList.add('hidden');
+                handleGridClass(false);
+            }
         }
     } catch (err) {
-        console.error("DEBUG: Session check failed", err);
         currentUser = null;
         if (btnLogout) btnLogout.classList.add('hidden');
         handleGridClass(false);
     }
 }
 
-async function syncOfflineNotesToCloud(userName) {
-    if (!currentUser || !userName || notes.length === 0 || !supabaseClient) return;
-    if (saveStatus) saveStatus.innerText = "Syncing offline notes to cloud...";
-    try {
-        const updatedNotes = notes.map(note => ({
-            ...note,
-            author: userName,
-            synced: false
-        }));
-        for (const note of updatedNotes) {
-            await saveNoteToCloud(note);
+async function syncOfflineNotesToCloud() {
+    if (!currentUser || notes.length === 0 || !supabaseClient) return;
+    
+    const unsavedNotes = notes.filter(n => !n.synced);
+    if (unsavedNotes.length === 0) return;
+
+    if (saveStatus) saveStatus.innerText = "Saving to cloud...";
+    
+    for (let note of unsavedNotes) {
+        try {
+            const { error } = await supabaseClient
+                .from('notes')
+                .upsert({
+                    user_id: currentUser.id,
+                    local_id: note.id,
+                    title: note.title,
+                    content: note.content,
+                    date: note.date,
+                    timestamp: note.timestamp,
+                    author: currentUser.email,
+                    deleted: note.deleted
+                }, { onConflict: 'user_id, local_id' });
+            
+            if (!error) note.synced = true;
+        } catch (e) {
+            console.error("Sync error:", e);
         }
-        notes = updatedNotes;
-        localStorage.setItem('ghostNotes', JSON.stringify(notes));
-        if (saveStatus) saveStatus.innerText = "Offline notes synced to cloud!";
-        setTimeout(() => {
-            if (saveStatus) saveStatus.innerText = "Ready";
-        }, 3000);
-    } catch (error) {
-        console.error("DEBUG: Error syncing notes:", error);
-        if (saveStatus) saveStatus.innerText = "Sync failed";
     }
+    localStorage.setItem('ghostNotes', JSON.stringify(notes));
+    if (saveStatus) saveStatus.innerText = "Saved to cloud";
+    setTimeout(() => {
+        if (saveStatus && saveStatus.innerText === "Saved to cloud") saveStatus.innerText = "Ready";
+    }, 2000);
 }
-
-// ────────────────────────────────────────────────────────
-// LOGOUT INTEGRATION (CORE FEATURE)
-// ────────────────────────────────────────────────────────
-
-async function handleLogout() {
-    // Show Loading in saveStatus if available
-    if (saveStatus) saveStatus.innerText = "Logging out...";
-
-    try {
-        if (supabaseClient) {
-            await supabaseClient.auth.signOut();
-        }
-        console.log("DEBUG: Supabase SignOut Complete");
-    } catch (error) {
-        console.error("DEBUG: Logout error:", error);
-    } finally {
-        // Clear all states
-        currentUser = null;
-        isGuestMode = false;
-        notes = [];
-
-        // Clear Persisted Storage
-        localStorage.removeItem('ghostNotes');
-        localStorage.removeItem('ghostLastView');
-        localStorage.removeItem('ghost_offline_user');
-        localStorage.removeItem('isGuestMode');
-        localStorage.removeItem('ghost_user');
-
-        // Show Success Feedback
-        if (loginError) {
-            loginError.textContent = "Logged out successfully";
-            loginError.style.color = "var(--success-color)";
-            loginError.classList.remove('hidden');
-        }
-
-        // Return to intro/login state
-        if (pageLoader) pageLoader.dataset.init = "true";
-        switchView('intro');
-
-        // Final UI cleanup
-        if (btnLogout) btnLogout.classList.add('hidden');
-        handleGridClass(false);
-
-        // Optional: Force reload to ensure fresh memory state
-        setTimeout(() => {
-            window.location.reload();
-        }, 1500);
-    }
-}
-
-// ────────────────────────────────────────────────────────
-// SUPABASE DATABASE SYNC INTEGRATION
-// ────────────────────────────────────────────────────────
 
 async function fetchNotesFromCloud() {
-    if (!currentUser || !supabaseClient) {
-        console.log("DEBUG: Not fetching from cloud: No user or supabase client");
-        return;
-    }
+    if (!currentUser || !supabaseClient) return;
     if (saveStatus) saveStatus.innerText = "Syncing from Cloud...";
     try {
         const { data, error } = await supabaseClient
@@ -1570,31 +1528,27 @@ async function fetchNotesFromCloud() {
             .eq('user_id', currentUser.id)
             .order('timestamp', { ascending: false });
 
-        if (error) {
-            console.error("DEBUG: Error fetching notes:", error);
-            if (saveStatus) saveStatus.innerText = "Offline Mode";
-            return;
-        }
+        if (error) throw error;
 
         if (data) {
-            console.log("DEBUG: Successfully fetched notes from cloud", data.length);
             const cloudNotes = data.map(n => ({
-                id: parseInt(n.local_id) || Date.now(),
+                id: n.local_id,
                 title: n.title,
                 content: n.content,
                 date: n.date,
-                timestamp: parseInt(n.timestamp) || Date.now(),
+                timestamp: n.timestamp,
                 author: n.author || (currentUser.email) || 'Anonymous',
                 deleted: n.deleted || false,
                 synced: true
             }));
 
-            // Merge with local changes that aren't synced yet
+            // Logic Fix: Section 4.2 - Safe Merge
             const localNotes = notes.filter(n => !n.synced);
-            const allNotes = [...cloudNotes, ...localNotes];
             const noteMap = new Map();
 
-            allNotes.forEach(note => {
+            // Cloud notes take priority for existing IDs unless local is newer
+            cloudNotes.forEach(note => noteMap.set(note.id, note));
+            localNotes.forEach(note => {
                 if (!noteMap.has(note.id) || note.timestamp > noteMap.get(note.id).timestamp) {
                     noteMap.set(note.id, note);
                 }
@@ -1603,7 +1557,6 @@ async function fetchNotesFromCloud() {
             notes = Array.from(noteMap.values()).sort((a, b) => b.timestamp - a.timestamp);
             localStorage.setItem('ghostNotes', JSON.stringify(notes));
 
-            // Trigger UI refreshes
             const currentView = document.querySelector('.view-section:not(.hidden)');
             if (currentView) {
                 if (currentView.id === 'view-dashboard') renderDashboard();
@@ -1613,30 +1566,25 @@ async function fetchNotesFromCloud() {
 
             if (saveStatus) saveStatus.innerText = "Synced with Cloud";
             setTimeout(() => {
-                if (saveStatus) saveStatus.innerText = "Ready";
+                if (saveStatus && saveStatus.innerText === "Synced with Cloud") saveStatus.innerText = "Ready";
             }, 2000);
         }
     } catch (err) {
-        console.error("DEBUG: Fetch notes error:", err);
         if (saveStatus) saveStatus.innerText = "Sync failed";
     }
 }
 
 async function saveNoteToCloud(note) {
     if (!currentUser || !supabaseClient) {
-        const name = localStorage.getItem('ghost_offline_user') || 'Offline';
-        if (saveStatus) saveStatus.innerText = `Saved Locally (${name})`;
         note.synced = false;
         return;
     }
-    if (saveStatus) saveStatus.innerText = "Uploading to Cloud...";
     try {
-        console.log("DEBUG: Upserting note to cloud", note.id);
         const { error } = await supabaseClient
             .from('notes')
             .upsert({
                 user_id: currentUser.id,
-                local_id: note.id.toString(), // Convert number ID to string for DB
+                local_id: note.id,
                 title: note.title,
                 content: note.content,
                 date: note.date,
@@ -1648,16 +1596,12 @@ async function saveNoteToCloud(note) {
             });
 
         if (error) {
-            console.error("DEBUG: Save to cloud error:", error);
-            if (saveStatus) saveStatus.innerText = "Save Failed (Local Only)";
             note.synced = false;
         } else {
-            if (saveStatus) saveStatus.innerText = "Saved to Cloud";
             note.synced = true;
+            if (saveStatus) saveStatus.innerText = "Saved to cloud";
         }
     } catch (err) {
-        console.error("DEBUG: Save note error:", err);
-        if (saveStatus) saveStatus.innerText = "Network Error";
         note.synced = false;
     }
 }
@@ -1666,27 +1610,32 @@ async function deleteNotesFromCloud(idsToDelete) {
     if (!currentUser || !supabaseClient) return;
     const ids = Array.from(idsToDelete).map(id => id.toString());
     try {
-        const { error } = await supabaseClient
+        await supabaseClient
             .from('notes')
             .delete()
             .in('local_id', ids)
             .eq('user_id', currentUser.id);
-        if (error) {
-            console.error("DEBUG: Delete from cloud error:", error);
-        }
     } catch (err) {
-        console.error("DEBUG: Delete notes error:", err);
+        console.error(err);
     }
 }
 
 // NOTE MANAGEMENT FUNCTIONS
 function saveCurrentNote() {
     if (!writerArea || !titleInput) return;
+    
     const content = writerArea.innerHTML;
     const title = titleInput.value;
     const plainText = writerArea.innerText.trim();
     const hasTitle = title.trim().length > 0;
     const hasContent = plainText.length > 0;
+
+    // Detect if content actually changed to avoid Rule 3C.1
+    const existingNote = notes.find(n => n.id === currentNoteId);
+    if (existingNote && existingNote.content === content && existingNote.title === title) {
+        return; 
+    }
+
     if (!hasTitle && !hasContent) {
         if (currentNoteId) {
             const noteIndex = notes.findIndex(n => n.id === currentNoteId);
@@ -1702,6 +1651,7 @@ function saveCurrentNote() {
         updateWordCount("");
         return;
     }
+
     let activeNote = null;
     if (!currentNoteId) {
         currentNoteId = Date.now();
@@ -1741,20 +1691,22 @@ function saveCurrentNote() {
             notes.unshift(activeNote);
         }
     }
+    
     localStorage.setItem('ghostNotes', JSON.stringify(notes));
     if (saveStatus) saveStatus.innerText = "Saving...";
     updateWordCount(writerArea.innerText);
+
     clearTimeout(saveTimeout);
     saveTimeout = setTimeout(() => {
         if (activeNote) {
             if (currentUser && supabaseClient && navigator.onLine) {
                 saveNoteToCloud(activeNote);
             } else {
-                const name = localUserName || 'Local';
-                if (saveStatus) saveStatus.innerText = `Saved Locally (${name})`;
+                const name = isGuestMode ? localUserName : (currentUser ? currentUser.email : 'Offline');
+                if (saveStatus) saveStatus.innerText = "Saved locally";
             }
         }
-    }, 1000);
+    }, 1500); // Safe Debounce (Rule 3C.4)
 }
 
 function updateWordCount(text) {
@@ -1771,14 +1723,14 @@ function loadNoteIntoEditor(noteId) {
         if (writerArea) writerArea.innerHTML = note.content;
         if (titleInput) titleInput.value = note.title;
         updateWordCount(writerArea.innerText);
-        if (saveStatus) saveStatus.innerText = "Loaded";
+        if (saveStatus) saveStatus.innerText = "Ready";
         saveViewState('writer', noteId);
     } else {
         currentNoteId = null;
         if (writerArea) writerArea.innerHTML = "";
         if (titleInput) titleInput.value = "";
         updateWordCount("");
-        if (saveStatus) saveStatus.innerText = "New Note";
+        if (saveStatus) saveStatus.innerText = "Ready";
         saveViewState('writer', null);
     }
 }
@@ -1789,7 +1741,6 @@ function saveViewState(viewName, noteId = null) {
     else localStorage.removeItem('ghostLastNote');
 }
 
-// VIEW NAVIGATION
 function switchView(target) {
     if (pageLoader && pageLoader.dataset.init === "true") {
         pageLoader.classList.add('animate');
@@ -1828,7 +1779,6 @@ function switchView(target) {
     }, (pageLoader && pageLoader.dataset.init === "true") ? 600 : 0);
 }
 
-// RENDERING FUNCTIONS
 function handleNoteAction(note) {
     const isMobile = window.innerWidth <= 768;
     if (isMobile) {
@@ -1975,7 +1925,6 @@ function renderBinGrid() {
     });
 }
 
-// SELECTION MODE FUNCTIONS
 function toggleSelectionMode(forceState) {
     if (!btnSelectMode) return;
     isSelectionMode = forceState !== undefined ? forceState : !isSelectionMode;
@@ -2010,32 +1959,70 @@ function updateDeleteButton() {
 
 function deleteSelectedNotes() {
     if (selectedNoteIds.size === 0) return;
-    notes.forEach(note => {
-        if (selectedNoteIds.has(note.id)) {
-            note.deleted = true;
-            saveNoteToCloud(note);
+    
+    // Safety: Section 5A - Always ask confirmation
+    showCustomModal("Delete Selected?", "The selected notes will be moved to the bin.", () => {
+        notes.forEach(note => {
+            if (selectedNoteIds.has(note.id)) {
+                note.deleted = true;
+                saveNoteToCloud(note);
+            }
+        });
+        localStorage.setItem('ghostNotes', JSON.stringify(notes));
+        if (selectedNoteIds.has(currentNoteId)) {
+            currentNoteId = null;
+            if (writerArea) writerArea.innerHTML = "";
+            if (titleInput) titleInput.value = "";
+            saveViewState('writer', null);
         }
+        renderHistoryGrid();
     });
-    localStorage.setItem('ghostNotes', JSON.stringify(notes));
-    if (selectedNoteIds.has(currentNoteId)) {
-        currentNoteId = null;
-        if (writerArea) writerArea.innerHTML = "";
-        if (titleInput) titleInput.value = "";
-        saveViewState('writer', null);
-    }
-    renderHistoryGrid();
 }
 
-// INITIALIZATION
+// LOGOUT LOGIC (CORE FEATURE)
+async function handleLogout() {
+    if (saveStatus) saveStatus.innerText = "Signing out...";
+
+    try {
+        if (supabaseClient && currentUser) {
+            await supabaseClient.auth.signOut();
+        }
+    } catch (error) {
+        console.error("DEBUG: Logout error:", error);
+    } finally {
+        // Clear global states
+        currentUser = null;
+        isGuestMode = false;
+        notes = [];
+
+        // Specific local storage key cleanup
+        localStorage.removeItem('ghostNotes');
+        localStorage.removeItem('ghostLastView');
+        localStorage.removeItem('ghostLastNote');
+        localStorage.removeItem('ghost_offline_user');
+        localStorage.setItem('isGuestMode', 'false');
+        localStorage.removeItem('ghost_user');
+
+        // Reset UI
+        if (pageLoader) pageLoader.dataset.init = "true";
+        switchView('intro');
+
+        if (btnLogout) btnLogout.classList.add('hidden');
+        handleGridClass(false);
+
+        setTimeout(() => {
+            window.location.reload();
+        }, 800);
+    }
+}
+
 function initEventListeners() {
-    // Modal event listeners
     if (modalCancelBtn) modalCancelBtn.addEventListener('click', hideCustomModal);
     if (modalConfirmBtn) modalConfirmBtn.addEventListener('click', () => {
         if (modalCallback) modalCallback();
         hideCustomModal();
     });
 
-    // Export modal
     if (btnExportSelected) {
         btnExportSelected.addEventListener('click', () => {
             if (selectedNoteIds.size === 0) {
@@ -2071,7 +2058,6 @@ function initEventListeners() {
         });
     }
 
-    // Preview sheet
     if (sheetCloseBtn) sheetCloseBtn.addEventListener('click', closeMobilePreview);
     if (previewOverlay) previewOverlay.addEventListener('click', closeMobilePreview);
     if (sheetEditBtn) sheetEditBtn.addEventListener('click', () => {
@@ -2084,222 +2070,79 @@ function initEventListeners() {
         }
     });
 
-    // Template modal
-    if (btnOpenTemplates) {
-        btnOpenTemplates.addEventListener('click', openTemplateModal);
-    }
-    if (btnCloseTemplate) {
-        btnCloseTemplate.addEventListener('click', closeTemplateModal);
-    }
+    if (btnOpenTemplates) btnOpenTemplates.addEventListener('click', openTemplateModal);
+    if (btnCloseTemplate) btnCloseTemplate.addEventListener('click', closeTemplateModal);
 
-    // Auth modal navigation
     authNavBtns.forEach(btn => {
-        btn.addEventListener('click', () => {
-            switchAuthMode(btn.dataset.mode);
-        });
+        btn.addEventListener('click', () => switchAuthMode(btn.dataset.mode));
     });
 
-    // Auth proceed button
     if (authProceedBtn) {
         authProceedBtn.addEventListener('click', () => {
-            if (authMode === 'login') {
-                handleLogin();
-            } else {
-                handleSignup();
-            }
+            if (authMode === 'login') handleLogin();
+            else handleSignup();
         });
     }
 
-    // Auth cancel button
-    if (authCancelBtn) {
-        authCancelBtn.addEventListener('click', hideAuthModal);
-    }
+    if (authCancelBtn) authCancelBtn.addEventListener('click', hideAuthModal);
+    if (guestProceedBtn) guestProceedBtn.addEventListener('click', handleGuestLogin);
+    if (btnLogout) btnLogout.addEventListener('click', handleLogout);
 
-    // Guest modal
-    if (guestProceedBtn) {
-        guestProceedBtn.addEventListener('click', handleGuestLogin);
-    }
-    if (guestCancelBtn) {
-        guestCancelBtn.addEventListener('click', hideGuestModal);
-    }
+    if (guestBtnIntro) guestBtnIntro.addEventListener('click', showGuestModal);
 
-    // Guest button in intro
-    if (guestBtnIntro) {
-        guestBtnIntro.addEventListener('click', showGuestModal);
-    }
-
-    // View navigation
     if (btnLetsGo) btnLetsGo.addEventListener('click', () => {
-        // Check if user is already logged in or in guest mode
-        const savedUser = localStorage.getItem('ghost_user');
-        if (savedUser || isGuestMode) {
-            if (pageLoader) pageLoader.dataset.init = "true";
-            switchView('dashboard');
-        } else {
-            showAuthModal();
-        }
+        if (currentUser || isGuestMode) switchView('dashboard');
+        else showAuthModal();
     });
 
-    if (btnDashBack) btnDashBack.addEventListener('click', () => {
-        if (pageLoader) pageLoader.dataset.init = "true";
-        switchView('intro');
-    });
-    if (btnExit) btnExit.addEventListener('click', () => {
-        if (pageLoader) pageLoader.dataset.init = "true";
-        switchView('dashboard');
-    });
-    if (btnDashboardHistory) btnDashboardHistory.addEventListener('click', () => {
-        if (pageLoader) pageLoader.dataset.init = "true";
-        switchView('history');
-    });
-    if (btnBackFromHistory) btnBackFromHistory.addEventListener('click', () => {
-        if (pageLoader) pageLoader.dataset.init = "true";
-        switchView('dashboard');
-    });
-    if (btnDashboardBin) btnDashboardBin.addEventListener('click', () => {
-        if (pageLoader) pageLoader.dataset.init = "true";
-        switchView('bin');
-    });
-    if (btnBackFromBin) btnBackFromBin.addEventListener('click', () => {
-        if (pageLoader) pageLoader.dataset.init = "true";
-        switchView('dashboard');
-    });
+    if (btnDashBack) btnDashBack.addEventListener('click', () => switchView('intro'));
+    if (btnExit) btnExit.addEventListener('click', () => switchView('dashboard'));
+    if (btnDashboardHistory) btnDashboardHistory.addEventListener('click', () => switchView('history'));
+    if (btnBackFromHistory) btnBackFromHistory.addEventListener('click', () => switchView('dashboard'));
+    if (btnDashboardBin) btnDashboardBin.addEventListener('click', () => switchView('bin'));
+    if (btnBackFromBin) btnBackFromBin.addEventListener('click', () => switchView('dashboard'));
 
-    // Mobile navigation
-    if (btnNewNoteMob) {
-        btnNewNoteMob.addEventListener('click', () => {
-            if (pageLoader) pageLoader.dataset.init = "true";
-            loadNoteIntoEditor(null);
-            switchView('writer');
-        });
-    }
-    if (btnOpenBinMob) {
-        btnOpenBinMob.addEventListener('click', () => {
-            if (pageLoader) pageLoader.dataset.init = "true";
-            switchView('bin');
-        });
-    }
-
-    // Empty bin
+    if (btnSelectMode) btnSelectMode.addEventListener('click', () => toggleSelectionMode());
+    if (btnDeleteSelected) btnDeleteSelected.addEventListener('click', deleteSelectedNotes);
     if (btnEmptyBin) {
         btnEmptyBin.addEventListener('click', () => {
-            const deletedCount = notes.filter(n => n.deleted).length;
-            if (deletedCount === 0) {
-                alert("Recycle bin is already empty.");
-                return;
-            }
-            showCustomModal("Empty Recycle Bin?", `Permanently delete ${deletedCount} items?`, () => {
-                const idsToDelete = notes.filter(n => n.deleted).map(n => n.id);
+            showCustomModal("Empty Bin?", "All notes in the bin will be deleted permanently.", () => {
+                const deletedIds = notes.filter(n => n.deleted).map(n => n.id);
                 notes = notes.filter(n => !n.deleted);
                 localStorage.setItem('ghostNotes', JSON.stringify(notes));
                 if (currentUser && supabaseClient) {
-                    deleteNotesFromCloud(idsToDelete);
+                    deleteNotesFromCloud(deletedIds);
                 }
                 renderBinGrid();
             });
         });
     }
 
-    // Selection mode
-    if (btnSelectMode) btnSelectMode.addEventListener('click', () => toggleSelectionMode());
-    if (btnDeleteSelected) btnDeleteSelected.addEventListener('click', deleteSelectedNotes);
-
-    // Logout - ATTACHED TO NEW LOGOUT HANDLER
-    if (btnLogout) btnLogout.addEventListener('click', handleLogout);
-
-    // Auto-save
-    if (writerArea) {
-        writerArea.addEventListener('input', saveCurrentNote);
-        writerArea.addEventListener('keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
-                setTimeout(saveCurrentNote, 0);
-            }
+    if (btnNewNoteMob) {
+        btnNewNoteMob.addEventListener('click', () => {
+            loadNoteIntoEditor(null);
+            switchView('writer');
         });
     }
+    if (btnOpenBinMob) {
+        btnOpenBinMob.addEventListener('click', () => switchView('bin'));
+    }
+
+    if (writerArea) writerArea.addEventListener('input', saveCurrentNote);
     if (titleInput) titleInput.addEventListener('input', saveCurrentNote);
 
-    // Window resize
-    window.addEventListener('resize', () => {
-        if (toolbarBelt) {
-            if (window.innerWidth <= 768) {
-                toolbarBelt.classList.remove('hidden-belt');
-                toolbarBelt.style.display = 'flex';
-            }
-        }
-        const currentView = document.querySelector('.view-section:not(.hidden)');
-        if (currentView && currentView.id === 'view-dashboard') {
-            renderDashboard();
-        } else if (currentView && currentView.id === 'view-history') {
-            renderHistoryGrid();
-        } else if (currentView && currentView.id === 'view-bin') {
-            renderBinGrid();
-        }
-    });
-
-    // Online/offline status
-    window.addEventListener('online', async () => {
-        if (!currentUser) return;
-        if (saveStatus) saveStatus.innerText = "Back Online. Syncing...";
-        const unsyncedNotes = notes.filter(note => !note.synced && currentUser);
-        if (unsyncedNotes.length > 0 && supabaseClient) {
-            for (const note of unsyncedNotes) {
-                await saveNoteToCloud(note);
-                note.synced = true;
-            }
-            localStorage.setItem('ghostNotes', JSON.stringify(notes));
-        }
-        await fetchNotesFromCloud();
-    });
-    window.addEventListener('offline', () => {
-        if (saveStatus) saveStatus.innerText = "Offline Mode";
-    });
-
-    // Click outside modal to close
-    const modalOverlays = document.querySelectorAll('.modal-overlay');
-    modalOverlays.forEach(overlay => {
-        overlay.addEventListener('click', (e) => {
-            if (e.target === overlay) {
-                overlay.classList.add('hidden');
-            }
-        });
-    });
-
-    // Enter key in auth inputs
-    [loginUsernameInput, loginEmailInput, loginPasswordInput,
-        signupEmailInput, signupPasswordInput, signupConfirmPasswordInput,
-        guestUsernameInput].forEach(input => {
-            if (input) {
-                input.addEventListener('keypress', (e) => {
-                    if (e.key === 'Enter') {
-                        e.preventDefault();
-                        if (authModal && !authModal.classList.contains('hidden')) {
-                            if (authMode === 'login') {
-                                handleLogin();
-                            } else {
-                                handleSignup();
-                            }
-                        } else if (guestModal && !guestModal.classList.contains('hidden')) {
-                            handleGuestLogin();
-                        }
-                    }
-                });
-            }
-        });
+    initToolbar();
 }
 
 async function initApp() {
-    console.log("DEBUG: Initializing Ghost Writer App...");
     loadTheme();
     initThemeToggle();
     initTemplateModal();
-    initToolbar();
     initEditorPasteHandler();
     initEventListeners();
 
-    // Check session before setting UI state
     await checkSession();
 
-    // Check if user is already logged in or in guest mode
     const savedUser = localStorage.getItem('ghost_user');
     if (savedUser) {
         try {
@@ -2310,10 +2153,8 @@ async function initApp() {
         }
     }
 
-    if (pageLoader) {
-        pageLoader.dataset.init = "true";
-    }
-
+    if (pageLoader) pageLoader.dataset.init = "true";
+    
     const lastView = localStorage.getItem('ghostLastView');
     const lastNoteId = localStorage.getItem('ghostLastNote');
     let initialView = 'intro';
@@ -2328,17 +2169,6 @@ async function initApp() {
     }
 
     switchView(initialView);
-
-    if (window.innerWidth <= 768 && toolbarBelt) {
-        toolbarBelt.classList.remove('hidden-belt');
-        toolbarBelt.style.display = 'flex';
-    }
-
-    console.log("DEBUG: App initialization complete");
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', initApp);
-} else {
-    initApp();
-}
+document.addEventListener('DOMContentLoaded', initApp);

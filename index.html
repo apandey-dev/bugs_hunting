@@ -68,31 +68,33 @@
         <div id="auth-modal" class="modal-overlay hidden" style="z-index: 4000;">
             <div class="modal-box auth-box">
                 <div class="auth-nav">
-                    <button class="auth-nav-btn active" data-mode="login">Welcome Back</button>
-                    <button class="auth-nav-btn" data-mode="signup">Create Account</button>
+                    <button class="auth-nav-btn active" data-mode="login">Login</button>
+                    <button class="auth-nav-btn" data-mode="signup">Signup</button>
                 </div>
 
-                <div id="login-form" class="auth-form active-form">
-                    <input type="email" id="login-email" class="auth-input" placeholder="Email Address"
-                        autocomplete="email">
-                    <input type="password" id="login-password" class="auth-input" placeholder="Password"
-                        autocomplete="current-password">
-                    <div id="login-error" class="error-text hidden"></div>
-                </div>
+                <div class="auth-form-viewport">
+                    <div id="login-form" class="auth-form active-form">
+                        <input type="email" id="login-email" class="auth-input" placeholder="Email Address"
+                            autocomplete="email">
+                        <input type="password" id="login-password" class="auth-input" placeholder="Password"
+                            autocomplete="current-password">
+                        <div id="login-error" class="error-text hidden"></div>
+                    </div>
 
-                <div id="signup-form" class="auth-form">
-                    <input type="email" id="signup-email" class="auth-input" placeholder="Email Address"
-                        autocomplete="email">
-                    <input type="password" id="signup-password" class="auth-input" placeholder="Password"
-                        autocomplete="new-password">
-                    <input type="password" id="signup-confirm-password" class="auth-input"
-                        placeholder="Confirm Password" autocomplete="new-password">
-                    <div id="signup-error" class="error-text hidden"></div>
+                    <div id="signup-form" class="auth-form">
+                        <input type="text" id="signup-username" class="auth-input" placeholder="Username"
+                            autocomplete="username">
+                        <input type="email" id="signup-email" class="auth-input" placeholder="Email Address"
+                            autocomplete="email">
+                        <input type="password" id="signup-password" class="auth-input" placeholder="Password"
+                            autocomplete="new-password">
+                        <div id="signup-error" class="error-text hidden"></div>
+                    </div>
                 </div>
 
                 <div class="auth-modal-actions">
-                    <button id="auth-cancel" class="btn-bordered-custom semi-square">Cancel</button>
-                    <button id="auth-proceed" class="btn btn-primary semi-square">Proceed</button>
+                    <button id="auth-cancel" class="btn-bordered-custom">Cancel</button>
+                    <button id="auth-proceed" class="btn btn-primary">Proceed</button>
                 </div>
             </div>
         </div>
