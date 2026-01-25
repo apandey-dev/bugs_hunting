@@ -427,40 +427,24 @@
         <div id="menu-overlay" class="floating-overlay" onclick="UI.closeAllMenus()">
 
             <div class="floating-menu" id="color-box" onclick="event.stopPropagation()">
-                <div class="color-swatch" style="background-color: #ffffff;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#ffffff')"></div>
-                <div class="color-swatch" style="background-color: #d1d5db;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#d1d5db')"></div>
-                <div class="color-swatch" style="background-color: #9ca3af;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#9ca3af')"></div>
-                <div class="color-swatch" style="background-color: #fb923c;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#fb923c')"></div>
-
-                <div class="color-swatch" style="background-color: #f87171;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#f87171')"></div>
-                <div class="color-swatch" style="background-color: #4ade80;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#4ade80')"></div>
-                <div class="color-swatch" style="background-color: #60a5fa;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#60a5fa')"></div>
-                <div class="color-swatch" style="background-color: #c084fc;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#c084fc')"></div>
-
-                <div class="color-swatch" style="background-color: #facc15;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#facc15')"></div>
-                <div class="color-swatch" style="background-color: #f472b6;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#f472b6')"></div>
-                <div class="color-swatch" style="background-color: #22d3ee;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#22d3ee')"></div>
-                <div class="color-swatch" style="background-color: #2dd4bf;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#2dd4bf')"></div>
-                <div class="color-swatch" style="background-color: #818cf8;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#818cf8')"></div>
-                <div class="color-swatch" style="background-color: #a3e635;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#a3e635')"></div>
-                <div class="color-swatch" style="background-color: #fbbf24;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#fbbf24')"></div>
-                <div class="color-swatch" style="background-color: #fb7185;" onmousedown="event.preventDefault();"
-                    onclick="Logic.setTextColor('#fb7185')"></div>
+                <!-- Neutral (Black/White) -->
+                <div class="color-swatch" style="background-color: var(--color-neutral);"
+                    onmousedown="event.preventDefault();" onclick="Logic.setTextColor('neutral')" title="Neutral"></div>
+                <!-- Red -->
+                <div class="color-swatch" style="background-color: var(--color-red);"
+                    onmousedown="event.preventDefault();" onclick="Logic.setTextColor('red')" title="Red"></div>
+                <!-- Orange -->
+                <div class="color-swatch" style="background-color: var(--color-orange);"
+                    onmousedown="event.preventDefault();" onclick="Logic.setTextColor('orange')" title="Orange"></div>
+                <!-- Green -->
+                <div class="color-swatch" style="background-color: var(--color-green);"
+                    onmousedown="event.preventDefault();" onclick="Logic.setTextColor('green')" title="Green"></div>
+                <!-- Blue -->
+                <div class="color-swatch" style="background-color: var(--color-blue);"
+                    onmousedown="event.preventDefault();" onclick="Logic.setTextColor('blue')" title="Blue"></div>
+                <!-- Purple -->
+                <div class="color-swatch" style="background-color: var(--color-purple);"
+                    onmousedown="event.preventDefault();" onclick="Logic.setTextColor('purple')" title="Purple"></div>
             </div>
 
             <div class="floating-menu" id="font-box" onclick="event.stopPropagation()">

@@ -51,6 +51,20 @@
 
     --caret-color: #ffffff;
     --selection-bg: rgba(59, 130, 246, 0.3);
+
+    /* --- THEME PALETTE (Dark Mode Defaults - Bright/Pastel for contrast) --- */
+    --color-neutral: #ffffff;
+    /* White in Dark Mode */
+    --color-red: #f87171;
+    /* Red-400 */
+    --color-orange: #fb923c;
+    /* Orange-400 */
+    --color-green: #4ade80;
+    /* Green-400 */
+    --color-blue: #60a5fa;
+    /* Blue-400 */
+    --color-purple: #c084fc;
+    /* Purple-400 */
 }
 
 body[data-theme="light"] {
@@ -99,6 +113,20 @@ body[data-theme="light"] {
 
     --caret-color: #000000;
     --selection-bg: rgba(37, 99, 235, 0.2);
+
+    /* --- THEME PALETTE (Light Mode Defaults - Darker/Vibrant) --- */
+    --color-neutral: #000000;
+    /* Black in Light Mode */
+    --color-red: #dc2626;
+    /* Red-600 */
+    --color-orange: #ea580c;
+    /* Orange-600 */
+    --color-green: #16a34a;
+    /* Green-600 */
+    --color-blue: #2563eb;
+    /* Blue-600 */
+    --color-purple: #9333ea;
+    /* Purple-600 */
 }
 
 /* Apply theme variables */
@@ -1171,7 +1199,8 @@ html {
     padding: 30px 20px;
     max-width: 1600px;
     margin: 0 auto;
-    caret-color: var(--caret-color);
+    caret-color: currentColor;
+    /* Syncs cursor color with text color */
 }
 
 #editor ::selection {
@@ -1319,10 +1348,11 @@ html {
 }
 
 /* --- MODALS --- */
-#modal-overlay {
+#modal-overlay,
+#settings-modal-overlay {
     display: none;
     position: fixed;
-    font-family: fredoka;
+    font-family: 'Fredoka', sans-serif;
     top: 0;
     left: 0;
     width: 100%;
@@ -1336,10 +1366,13 @@ html {
     transition: opacity 0.25s ease;
 }
 
-#modal-overlay.visible {
+#modal-overlay.visible,
+#settings-modal-overlay.visible {
     opacity: 1;
 }
 
+/* Base Modal Style */
+.modal,
 .modal-box {
     background: var(--bg-modal);
     border: 1px solid var(--border-primary);
@@ -1353,7 +1386,10 @@ html {
     transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
-#modal-overlay.visible .modal-box {
+#modal-overlay.visible .modal-box,
+#modal-overlay.visible .modal,
+#settings-modal-overlay.visible .modal-box,
+#settings-modal-overlay.visible .modal {
     transform: scale(1);
 }
 
@@ -1854,6 +1890,31 @@ pre.code-block code {
 
 .code-function {
     color: #dcdcaa;
+}
+
+/* --- THEME TEXT COLORS --- */
+.text-neutral {
+    color: var(--color-neutral);
+}
+
+.text-red {
+    color: var(--color-red);
+}
+
+.text-orange {
+    color: var(--color-orange);
+}
+
+.text-green {
+    color: var(--color-green);
+}
+
+.text-blue {
+    color: var(--color-blue);
+}
+
+.text-purple {
+    color: var(--color-purple);
 }
 
 /* --- SHARE MODAL STYLES (NEW) --- */

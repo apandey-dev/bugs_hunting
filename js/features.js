@@ -758,71 +758,7 @@ UI.togglePinFilter = function () {
     this.renderChips();
 };
 
-/* ================================
-   SOURCE: js/chip-context-menu.js
-   PURPOSE: Chip context menu handling
-   NOTE: Must come AFTER UI is defined
-   ================================ */
-
-// Chip Context Menu - Attach to existing UI object
-UI.showChipContextMenu = function (e, noteId) {
-    const menu = document.getElementById('chip-context-menu');
-    if (!menu) return;
-
-    menu.style.display = 'block';
-    menu.style.left = e.pageX + 'px';
-    menu.style.top = e.pageY + 'px';
-    menu.dataset.noteId = noteId;
-
-    setTimeout(() => {
-        document.addEventListener('click', () => UI.hideChipContextMenu(), { once: true });
-    }, 10);
-};
-
-UI.hideChipContextMenu = function () {
-    const menu = document.getElementById('chip-context-menu');
-    if (menu) {
-        menu.style.display = 'none';
-        delete menu.dataset.noteId;
-    }
-};
-
-UI.handleChipContextAction = function (action, noteId) {
-    UI.hideChipContextMenu();
-
-    const note = Store.notes.find(n => n.id === noteId);
-    if (!note) return;
-
-    switch (action) {
-        case 'rename':
-            const newTitle = prompt('Enter new title:', note.title);
-            if (newTitle && newTitle.trim()) {
-                Store.updateTitle(noteId, newTitle.trim());
-                UI.renderChips();
-            }
-            break;
-        case 'pin':
-            const newStatus = !note.is_pinned;
-            Store.togglePinStatus(noteId, newStatus);
-            UI.renderChips();
-            break;
-        case 'export':
-            if (typeof Logic !== 'undefined' && Logic.exportNoteToPDF) {
-                Logic.exportNoteToPDF(noteId);
-            }
-            break;
-        case 'share':
-            if (typeof Logic !== 'undefined' && Logic.shareNote) {
-                Logic.shareNote(noteId);
-            }
-            break;
-        case 'delete':
-            if (confirm(`Delete "${note.title}"?`)) {
-                Store.deleteNote(noteId);
-            }
-            break;
-    }
-};
+// Methods moved to UI object definition above
 
 // Initialize context menu clicks (will run when DOM is ready)
 document.addEventListener('DOMContentLoaded', () => {
@@ -1256,12 +1192,18 @@ const Logic = {
         } catch (e) { }
     },
 
-    updateColorIndicator: function (color) {
+    updateColorIndicator: function (colorName) {
         const indicator = document.getElementById('color-indicator');
         if (!indicator) return;
-        const isWhite = color === 'rgb(255, 255, 255)' || color === '#ffffff' || color === 'white' || color === 'rgba(0, 0, 0, 0)';
-        if (color && !isWhite) {
-            indicator.style.backgroundColor = color;
+
+        // Use variable for indicator
+        if (colorName) {
+            const validThemeColors = ['neutral', 'red', 'orange', 'green', 'blue', 'purple'];
+            if (validThemeColors.includes(colorName)) {
+                indicator.style.backgroundColor = `var(--color-${colorName})`;
+            } else {
+                indicator.style.backgroundColor = colorName;
+            }
             indicator.style.display = 'block';
         } else {
             indicator.style.display = 'none';
@@ -1279,16 +1221,35 @@ const Logic = {
         this.checkToolbarState();
     },
 
-    setTextColor: function (color) {
+    setTextColor: function (colorName) {
         this.restoreSelection();
+
+        // 1. Theme Colors (Class-based)
+        const validThemeColors = ['neutral', 'red', 'orange', 'green', 'blue', 'purple'];
+        const isThemeColor = validThemeColors.includes(colorName);
+
         const sel = window.getSelection();
         if (!sel.rangeCount) return;
         const range = sel.getRangeAt(0);
 
         if (range.collapsed) {
-            // 1. Cursor Only: Insert colored span with ZWS
+            // Cursor Only: Insert colored span with ZWS
             const span = document.createElement('span');
-            span.style.color = color;
+
+            if (isThemeColor) {
+                span.className = `text-${colorName}`;
+            } else {
+                // Universal Color (Inline Style)
+                // Only apply if it's a valid color? Browser handles invalid styles gracefully (ignores them)
+                // We can try setting it and see if it sticks, but for now just setting it is enough.
+                span.style.color = colorName;
+                // Check if valid?
+                if (span.style.color === '') {
+                    // Invalid color, abort
+                    return;
+                }
+            }
+
             span.innerHTML = '&#8203;'; // Zero-width space
             range.insertNode(span);
 
@@ -1299,10 +1260,16 @@ const Logic = {
             sel.removeAllRanges();
             sel.addRange(newRange);
         } else {
-            // 2. Selection: Wrap text
+            // Selection: Wrap text
             try {
                 const span = document.createElement('span');
-                span.style.color = color;
+
+                if (isThemeColor) {
+                    span.className = `text-${colorName}`;
+                } else {
+                    span.style.color = colorName;
+                    if (span.style.color === '') return; // Invalid
+                }
 
                 try {
                     range.surroundContents(span);
@@ -1318,7 +1285,7 @@ const Logic = {
 
         UI.closeAllMenus();
         Store.save();
-        this.updateColorIndicator(color);
+        this.updateColorIndicator(colorName);
     },
 
     setFont: function (fontName) {
@@ -1616,7 +1583,7 @@ const Logic = {
         const { cleanText, color } = this.parseColorShortcut(content);
 
         if (color) {
-            newHeader.innerHTML = `<span style="color: ${color}">${cleanText || ''}</span>`;
+            newHeader.innerHTML = `<span class="text-${color}">${cleanText || ''}</span>`;
         } else {
             newHeader.textContent = cleanText || '';
         }
@@ -1645,11 +1612,9 @@ const Logic = {
     // Helper: Extract color shortcut from text
     parseColorShortcut: function (text) {
         const colorMap = {
-            'red': '#f87171', 'blue': '#60a5fa', 'green': '#4ade80',
-            'yellow': '#facc15', 'pink': '#f472b6', 'violet': '#c084fc',
-            'orange': '#fb923c', 'purple': '#a855f7', 'gray': '#9ca3af',
-            'white': '#ffffff', 'cyan': '#22d3ee', 'magenta': '#e879f9',
-            'lime': '#a3e635', 'indigo': '#818cf8', 'teal': '#2dd4bf'
+            'red': 'red', 'blue': 'blue', 'green': 'green',
+            'orange': 'orange', 'purple': 'purple',
+            'neutral': 'neutral', 'black': 'neutral', 'white': 'neutral'
         };
 
         const match = text.match(/@([a-zA-Z]+)/);
@@ -1663,6 +1628,113 @@ const Logic = {
             }
         }
         return { cleanText: text, color: null };
+    },
+
+    // New: Dynamic Colored Heading Execution
+    executeColoredHeading: function (keyword, colorName) {
+        // 1. Determine Tag
+        const tag = (keyword === 'subHead') ? 'H2' : 'H1';
+
+        // 2. Identify Current Block
+        const sel = window.getSelection();
+        if (!sel.rangeCount) return;
+        let node = sel.anchorNode;
+        if (node.nodeType === 3) node = node.parentNode;
+
+        // Find block container
+        while (node && node.id !== 'editor' && !['P', 'DIV', 'H1', 'H2', 'H3', 'LI'].includes(node.tagName)) {
+            node = node.parentNode;
+        }
+
+        if (!node || node.id === 'editor') {
+            // Fallback: execCommand if we can't find node (unlikely)
+            document.execCommand('formatBlock', false, tag);
+            return;
+        }
+
+        // 3. Create New Heading
+        const newHeader = document.createElement(tag);
+
+        // 4. Content Handling (Wrap in Span for Color Specificity)
+        const validThemeColors = ['neutral', 'red', 'orange', 'green', 'blue', 'purple'];
+        const isThemeColor = validThemeColors.includes(colorName.toLowerCase());
+
+        const span = document.createElement('span');
+
+        if (isThemeColor) {
+            span.className = `text-${colorName.toLowerCase()}`;
+        } else {
+            span.style.color = colorName;
+        }
+
+        // Transfer existing content to the span
+        span.innerHTML = node.innerHTML;
+
+        // Add span to header
+        newHeader.appendChild(span);
+        // Add ZWS for cursor position if empty? No, just keep it.
+
+        // 5. Replace Block
+        if (node.parentNode) {
+            node.parentNode.replaceChild(newHeader, node);
+        }
+
+        // 6. Set Cursor to END of the Span inside Heading
+        // This ensures user can keep typing "My Title" if they did the shortcut first
+        const range = document.createRange();
+        range.selectNodeContents(span);
+        range.collapse(false); // End of span
+        sel.removeAllRanges();
+        sel.addRange(range);
+
+        // IMPORTANT: Reset toolbar state to reflect new block
+        this.checkToolbarState();
+
+        Store.save();
+    },
+
+    // New: Dynamic Font Execution
+    executeDynamicFont: function (fontName) {
+        // Map short names to standard fonts
+        const fontMap = {
+            'Fredoka': 'Fredoka', 'Inter': 'Inter', 'Merriweather': 'Merriweather',
+            'Playpen': 'Playpen Sans', 'Kalam': 'Kalam',
+            'Pacifico': 'Pacifico', 'Satisfy': 'Satisfy', 'Poppins': 'Poppins',
+            'Monospace': 'monospace', 'Serif': 'serif', 'Sans': 'sans-serif'
+        };
+
+        // Normalize input (capitalize first letter for lookup, though mapping keys are specific)
+        // Better: Case insensitive lookup
+        const key = Object.keys(fontMap).find(k => k.toLowerCase() === fontName.toLowerCase());
+        const realFont = key ? fontMap[key] : fontName; // Fallback to raw name if not found
+
+        // Apply to current block
+        const sel = window.getSelection();
+        if (!sel.rangeCount) return;
+        let node = sel.anchorNode;
+        if (node.nodeType === 3) node = node.parentNode;
+
+        // Find block container
+        while (node && node.id !== 'editor' && !['P', 'DIV', 'H1', 'H2', 'H3', 'LI'].includes(node.tagName)) {
+            node = node.parentNode;
+        }
+
+        if (!node || node.id === 'editor') {
+            document.execCommand('fontName', false, realFont);
+            return;
+        }
+
+        // Apply font style directly to the block
+        // If it's a list item, we might want to wrap content, but applying to LI usually works for text inside.
+        // However, user said "kisi bhi line ko" (any line).
+
+        // Strategy: Apply style directly to the block element
+        node.style.fontFamily = `'${realFont}', sans-serif`;
+
+        // Reset sidebar font selection if needed?
+        // Logic.checkToolbarState() should handle it on next click
+
+        Store.save();
     },
 
     // --- SEARCH ---
@@ -1735,307 +1807,250 @@ const Logic = {
     },
 
     handleInput: function (e) {
+        // We only care if input just happened (character or space)
+        // Check for triggers at cursor position
         const sel = window.getSelection();
         if (!sel.rangeCount) return;
 
-        const node = sel.anchorNode;
+        const range = sel.getRangeAt(0);
+        const node = range.startContainer;
+
+        // We only support shortcuts in text nodes
         if (node.nodeType !== 3) return;
 
         const text = node.textContent;
-        const offset = sel.anchorOffset;
+        // Check triggers
 
-        // Helper to find block parent
-        let getBlockParent = (n) => {
-            let curr = n;
-            while (curr && curr.id !== 'editor') {
-                if (curr.tagName && ['P', 'DIV', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6', 'PRE'].includes(curr.tagName)) {
-                    return curr;
-                }
-                curr = curr.parentNode;
-            }
-            return null;
-        };
+        // 1. DIVIDERS (=== or ---)
+        if (text.endsWith('===') || text.endsWith('---')) {
+            const trigger = text.slice(-3);
+            if (text.trim() === trigger) {
+                // Remove trigger
+                const newRange = document.createRange();
+                newRange.setStart(node, range.startOffset - 3);
+                newRange.setEnd(node, range.startOffset);
+                sel.removeAllRanges();
+                sel.addRange(newRange);
+                document.execCommand('delete');
 
-        // === SHORTCUTS TRIGGERED ON COLON (:) ===
-        if (e.data === ':') {
-            const textBefore = text.slice(0, offset).trim();
-            let parent = node.parentNode;
-            while (parent && parent.nodeType === 3) parent = parent.parentNode;
-
-            // --- CODE BLOCK SHORTCUT ($code:) ---
-            if (textBefore === '$code:' || textBefore.match(/^\s*\$code:$/)) {
-                if (parent && (parent.tagName === 'P' || parent.tagName === 'DIV' || parent.id === 'editor')) {
-                    e.preventDefault();
-
-                    const pre = document.createElement('pre');
-                    pre.className = 'code-block';
-                    const code = document.createElement('code');
-                    code.textContent = 'Type your code here...';
-
-                    pre.appendChild(code);
-
-                    if (parent.id === 'editor') {
-                        const range = sel.getRangeAt(0);
-                        range.setStart(node, 0);
-                        range.setEnd(node, offset);
-                        range.deleteContents();
-                        range.insertNode(pre);
-                    } else {
-                        parent.replaceWith(pre);
-                    }
-
-                    const p = document.createElement('p');
-                    p.innerHTML = '<br>';
-                    pre.after(p);
-
-                    const range = document.createRange();
-                    range.selectNodeContents(code);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-
-                    Store.save();
-                    return;
-                }
-            }
-
-            // --- H1 HEADING SHORTCUT (#head:) ---
-            if (textBefore === '#head:' || textBefore.match(/^\s*#head:$/)) {
-                if (parent && (parent.tagName === 'P' || parent.tagName === 'DIV' || parent.id === 'editor')) {
-                    e.preventDefault();
-
-                    const h1 = document.createElement('h1');
-                    h1.innerHTML = '\u200B';
-
-                    if (parent.id === 'editor') {
-                        const range = sel.getRangeAt(0);
-                        range.setStart(node, 0);
-                        range.setEnd(node, offset);
-                        range.deleteContents();
-                        range.insertNode(h1);
-                    } else {
-                        parent.replaceWith(h1);
-                    }
-
-                    const range = document.createRange();
-                    range.setStart(h1, 0);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-
-                    Store.save();
-                    return;
-                }
-            }
-
-            // --- H2 HEADING SHORTCUT (#subHead:) ---
-            if (textBefore === '#subHead:' || textBefore.match(/^\s*#subHead:$/)) {
-                if (parent && (parent.tagName === 'P' || parent.tagName === 'DIV' || parent.id === 'editor')) {
-                    e.preventDefault();
-
-                    const h2 = document.createElement('h2');
-                    h2.innerHTML = '\u200B';
-
-                    if (parent.id === 'editor') {
-                        const range = sel.getRangeAt(0);
-                        range.setStart(node, 0);
-                        range.setEnd(node, offset);
-                        range.deleteContents();
-                        range.insertNode(h2);
-                    } else {
-                        parent.replaceWith(h2);
-                    }
-
-                    const range = document.createRange();
-                    range.setStart(h2, 0);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-
-                    Store.save();
-                    return;
-                }
+                // Insert Divider
+                const type = trigger === '===' ? 'double' : 'dashed';
+                this.insertDivider(type);
+                return;
             }
         }
 
-        // === COLOR SHORTCUT (@color + space) ===
-        if (e.data === ' ') {
-            // First check for $code: shortcut
-            const textBeforeSpace = text.slice(0, offset - 1).trim();
-            if (textBeforeSpace === '$code:') {
-                let parent = node.parentNode;
-                while (parent && parent.nodeType === 3) parent = parent.parentNode;
+        // 2. COLON TRIGGERS (@Keyword: or #Keyword[Color]: or #Keyword.Color:)
+        // Look for pattern ending in colon
+        const textBeforeCursor = text.slice(0, range.startOffset);
 
-                if (parent && (parent.tagName === 'P' || parent.tagName === 'DIV' || parent.id === 'editor')) {
-                    e.preventDefault();
+        // Regex breakdown:
+        // ([@#])        -> Starts with @ or #
+        // ([a-zA-Z0-9]+) -> Main keyword (e.g. head, subHead, red)
+        // (?: ... )?    -> Optional complex part
+        //   [\[\.]([a-zA-Z0-9]+)[\]]? -> [color] or .color
+        // :$            -> Ends with colon
 
-                    // Remove the $code: and space
-                    const pre = document.createElement('pre');
-                    pre.className = 'code-block';
-                    const code = document.createElement('code');
-                    code.textContent = 'Type your code here...';
-                    pre.appendChild(code);
+        const match = textBeforeCursor.match(/([@#])([a-zA-Z0-9]+)(?:[\[\.]([a-zA-Z0-9]+)[\]]?)?:$/);
 
-                    // Clear the text
-                    node.textContent = '';
+        if (match) {
+            const fullTrigger = match[0];
+            const prefix = match[1];      // @ or #
+            const keyword = match[2];     // head, red, etc.
+            const param = match[3];       // color (if present)
 
-                    if (parent.id === 'editor') {
-                        const range = document.createRange();
-                        range.setStart(node, 0);
-                        range.collapse(true);
-                        range.insertNode(pre);
-                    } else {
-                        parent.replaceWith(pre);
-                    }
+            const matchIndex = match.index;
 
-                    const p = document.createElement('p');
-                    p.innerHTML = '<br>';
-                    pre.after(p);
+            // Define textBeforeTrigger for scope checks
+            const textBeforeTrigger = textBeforeCursor.slice(0, matchIndex);
 
-                    const newRange = document.createRange();
-                    newRange.selectNodeContents(code);
-                    sel.removeAllRanges();
-                    sel.addRange(newRange);
+            // 3. CHECK SCOPE (Block vs Inline)
+            const blockShortcuts = ['head', 'subHead', 'code'];
+            const isBlockShortcut = blockShortcuts.includes(keyword);
 
-                    Store.save();
-                    return;
+            // Check if we are inside a list item
+            let inList = false;
+            let p = node.parentNode;
+            while (p && p.id !== 'editor') {
+                if (p.tagName === 'LI') {
+                    inList = true;
+                    break;
                 }
+                p = p.parentNode;
             }
 
-            // Then check for color shortcut
-            const textBeforeCursor = text.slice(0, offset - 1);
-            const match = textBeforeCursor.match(/@([a-zA-Z]+)$/);
+            // Inline shortcuts can be anywhere
+            const isAtStart = textBeforeTrigger.trim().length === 0;
 
-            if (match) {
-                const colorName = match[1].toLowerCase();
-                const colorMap = {
-                    'red': '#f87171', 'blue': '#60a5fa', 'green': '#4ade80',
-                    'yellow': '#facc15', 'pink': '#f472b6', 'violet': '#c084fc',
-                    'orange': '#fb923c', 'purple': '#a855f7', 'gray': '#9ca3af',
-                    'white': '#ffffff', 'cyan': '#22d3ee', 'magenta': '#e879f9',
-                    'lime': '#a3e635', 'indigo': '#818cf8', 'teal': '#2dd4bf',
-                    'black': '#1f2937', 'brown': '#a16207'
-                };
+            // HANDLE SHORTCUTS
+            const execute = () => {
+                // DELETE TRIGGER
+                const newRange = document.createRange();
+                newRange.setStart(node, matchIndex);
+                newRange.setEnd(node, range.startOffset);
+                sel.removeAllRanges();
+                sel.addRange(newRange);
+                document.execCommand('delete');
 
-                if (colorMap[colorName]) {
-                    const hexColor = colorMap[colorName];
-                    const matchIndex = match.index;
-                    const matchLength = match[0].length + 1; // +1 for space
-
-                    const range = document.createRange();
-                    range.setStart(node, matchIndex);
-                    range.setEnd(node, matchIndex + matchLength);
-                    range.deleteContents();
-
-                    const span = document.createElement('span');
-                    span.style.color = hexColor;
-                    span.innerHTML = '\u200B';
-
-                    range.insertNode(span);
-
-                    range.setStart(span, 1);
-                    range.collapse(true);
-                    sel.removeAllRanges();
-                    sel.addRange(range);
-
-                    this.updateColorIndicator(hexColor);
-                    Store.save();
-                    return;
+                // EXECUTE
+                if (prefix === '#' && param && (keyword === 'head' || keyword === 'subHead')) {
+                    // Dynamic Colored Heading
+                    this.executeColoredHeading(keyword, param);
+                } else if (prefix === '#' && keyword.toLowerCase() === 'setfont' && param) {
+                    // Dynamic Font Shortcut (Case-Insensitive for keyword)
+                    this.executeDynamicFont(param);
+                } else {
+                    // Standard Shortcut
+                    this.executeShortcut(keyword);
                 }
+            };
+
+            // RULE: Block shortcuts allowed ONLY if at start AND NOT in a list
+            if (isBlockShortcut) {
+                if (isAtStart && !inList) {
+                    execute();
+                }
+            } else {
+                // Inline shortcuts and restore allowed anywhere
+                // But for color shortcuts, we just execute.
+                execute();
             }
         }
     },
 
-    // NEW: Enter key fallback handler for shortcuts
-    handleEnterShortcuts: function (e) {
+    // Helper: Restore line to plain text
+    restoreLineFormatting: function () {
+        this.restoreSelection();
         const sel = window.getSelection();
         if (!sel.rangeCount) return;
 
         let node = sel.anchorNode;
-        if (node.nodeType === 3) node = node.parentNode;
+        // Find the block container (P, H1, etc.)
+        while (node && node.id !== 'editor' && !['P', 'H1', 'H2', 'H3', 'DIV', 'LI'].includes(node.tagName)) {
+            node = node.parentNode;
+        }
 
-        // Find block parent
-        let block = node;
-        while (block && block.id !== 'editor') {
-            if (block.tagName && ['P', 'DIV', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6'].includes(block.tagName)) {
+        if (node && node.id !== 'editor') {
+            // Get text content
+            const text = node.innerText || node.textContent;
+
+            // Create new plain paragraph
+            const newP = document.createElement('p');
+            newP.textContent = text; // Plain text only
+
+            // Replace
+            node.parentNode.replaceChild(newP, node);
+
+            // Restore cursor to end (simplest for now, or match offset if possible)
+            // Matching offset is hard because structure changed. End is safe for "restore".
+            const range = document.createRange();
+            range.selectNodeContents(newP);
+            range.collapse(false);
+            sel.removeAllRanges();
+            sel.addRange(range);
+
+            // Reset toolbar state
+            this.checkToolbarState();
+        }
+    },
+
+    executeShortcut: function (keyword) {
+        switch (keyword) {
+            case 'restore':
+                this.restoreLineFormatting();
                 break;
+            case 'head':
+                this.formatHeading('H1');
+                break;
+            case 'subHead':
+                this.formatHeading('H2');
+                break;
+            case 'bold':
+                this.formatText('bold');
+                break;
+            case 'italic':
+                this.formatText('italic');
+                break;
+            case 'underline':
+                this.formatText('underline');
+                break;
+            case 'addTab':
+                document.execCommand('indent');
+                break;
+            case 'code':
+                this.formatCodeBlock();
+                break;
+            default:
+                // Universal Color Support
+                // Any unknown keyword is attempted as a color
+                // Font shortcuts handled separately if they start with setFont
+                if (keyword.startsWith('setFont')) {
+                    const fontName = keyword.replace('setFont', '');
+                    const fontMap = {
+                        'Fredoka': 'Fredoka', 'Inter': 'Inter', 'Merriweather': 'Merriweather',
+                        'PlaypenSans': 'Playpen Sans', 'Kalam': 'Kalam',
+                        'Pacifico': 'Pacifico', 'Satisfy': 'Satisfy', 'Poppins': 'Poppins'
+                    };
+                    const realFont = fontMap[fontName];
+                    if (realFont) {
+                        this.setFont(realFont);
+                    }
+                } else {
+                    // Try as color
+                    this.setTextColor(keyword.toLowerCase());
+                }
+                break;
+        }
+    },
+
+    handleEnterShortcuts: function (e) {
+        // On pressing ENTER:
+        // - Colors and formatting should reset for the new line
+        // - Browser usually carries over style.
+
+        // Let the default Enter happen (Logic event listener usually allows default unless prevented)
+        // Wait, main.js calls handleEnterShortcuts.
+        // If we want to reset formatting on the NEW line, we should allow the Enter to happen, then strip format?
+
+        // Actually, main.js lines 2154 just calls this. If it returns true/false or e.defaultPrevented?
+        // We can use setTimeout to act AFTER the enter.
+
+        setTimeout(() => {
+            // Check if we have active formatting
+            if (document.queryCommandState('bold') || document.queryCommandState('italic') || document.queryCommandState('underline')) {
+                document.execCommand('removeFormat');
             }
-            block = block.parentNode;
-        }
 
-        if (!block || block.id === 'editor') return;
+            // Reset class-based colors
+            // Since we use classes now, 'removeFormat' might not catch them.
+            // We strip our specific color classes from the current block/span
+            const sel = window.getSelection();
+            if (sel.rangeCount) {
+                let node = sel.anchorNode;
+                if (node.nodeType === 3) node = node.parentNode;
 
-        const blockText = block.textContent.trim();
+                // If we are in an empty new line inside a colored span, unwrap or remove class
+                const validClasses = ['text-neutral', 'text-red', 'text-orange', 'text-green', 'text-blue', 'text-purple'];
 
-        // Check for #head: at line start
-        if (blockText.startsWith('#head:')) {
-            e.preventDefault();
-            const content = blockText.substring(6).trim();
-            const h1 = document.createElement('H1');
-            h1.textContent = content || '\u200B';
-            block.replaceWith(h1);
+                // Check if current node has one of these classes
+                if (node.tagName === 'SPAN' && validClasses.some(c => node.classList.contains(c))) {
+                    // Remove the color class
+                    validClasses.forEach(c => node.classList.remove(c));
+                }
 
-            const p = document.createElement('p');
-            p.innerHTML = '<br>';
-            h1.after(p);
-
-            const range = document.createRange();
-            range.setStart(p, 0);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-
-            Store.save();
-            return;
-        }
-
-        // Check for #subHead: at line start
-        if (blockText.startsWith('#subHead:')) {
-            e.preventDefault();
-            const content = blockText.substring(9).trim();
-            const h2 = document.createElement('H2');
-            h2.textContent = content || '\u200B';
-            block.replaceWith(h2);
-
-            const p = document.createElement('p');
-            p.innerHTML = '<br>';
-            h2.after(p);
-
-            const range = document.createRange();
-            range.setStart(p, 0);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-
-            Store.save();
-            return;
-        }
-
-        // Check for $code: at line start
-        if (blockText.startsWith('$code:')) {
-            e.preventDefault();
-            const content = blockText.substring(6).trim();
-
-            const pre = document.createElement('pre');
-            pre.className = 'code-block';
-            const code = document.createElement('code');
-            code.textContent = content || 'Type your code here...';
-            pre.appendChild(code);
-
-            block.replaceWith(pre);
-
-            const p = document.createElement('p');
-            p.innerHTML = '<br>';
-            pre.after(p);
-
-            const range = document.createRange();
-            range.setStart(p, 0);
-            range.collapse(true);
-            sel.removeAllRanges();
-            sel.addRange(range);
-
-            Store.save();
-            return;
-        }
+                // Also check ancestors (sometimes browser nests)
+                let parent = node.parentNode;
+                while (parent && parent.id !== 'editor') {
+                    if (parent.tagName === 'SPAN' && validClasses.some(c => parent.classList.contains(c))) {
+                        // If parent is colored, we need to break out. 
+                        // Simplest way for a new line is to insert a clean span or text node?
+                        // Or just use removeFormat default behavior which often breaks styles?
+                        // Let's just try to be simple: the above check for immediate parent is mostly enough for 'Enter'.
+                    }
+                    parent = parent.parentNode;
+                }
+            }
+        }, 10);
     },
 
     installPWA: async function () {
