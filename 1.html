@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Business Card - Arpit Pandey</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -27,7 +27,8 @@
 
         body {
             background-color: #f0f0f0;
-            font-family: 'Poppins', sans-serif;
+            /* FONT CHANGED TO FREDOKA */
+            font-family: 'Fredoka', sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -84,18 +85,23 @@
         .img-container {
             z-index: 2;
             margin-top: 60px;
-            width: 220px;
-            height: 220px;
+            width: 240px; /* Slightly larger to fit the circle nicely */
+            height: 240px;
             position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        /* User Image styling */
+        /* User Image styling - UPDATED FOR NEW IMAGE */
         .profile-img {
             width: 100%;
             height: 100%;
-            object-fit: cover;
-            /* To remove the background of your PNG if it has one, use this */
-            /* filter: drop-shadow(0 5px 10px rgba(0,0,0,0.2)); */
+            object-fit: cover; /* Ensures the image fills the circle without distortion */
+            border-radius: 50%; /* Creates the circular cutout shape */
+            /* Optional: Add a thin white border to make it pop */
+            border: 4px solid var(--white); 
+            box-shadow: 0 8px 15px rgba(0,0,0,0.1); /* Adds a little depth */
         }
 
         /* Bottom "Juss.erty" Section */
@@ -123,12 +129,12 @@
 
         /* The Brand Name Text */
         .brand-name {
-            font-size: 32px;
-            font-weight: 800;
+            font-size: 36px; /* Slightly larger for Fredoka */
+            font-weight: 700;
             color: var(--primary-blue);
             z-index: 3;
-            margin-bottom: 20px;
-            letter-spacing: -1px;
+            margin-bottom: 25px;
+            letter-spacing: 0.5px;
         }
 
         /* --- BACK SIDE (Details) --- */
@@ -157,23 +163,24 @@
         }
 
         .name {
-            font-size: 28px;
+            font-size: 30px; /* Adjusted for Fredoka */
             font-weight: 700;
             text-transform: uppercase;
             line-height: 1.2;
+            letter-spacing: 0.5px;
         }
 
         .role {
-            font-size: 16px;
-            font-weight: 400;
-            opacity: 0.9;
-            margin-top: 5px;
+            font-size: 18px;
+            font-weight: 500;
+            opacity: 0.95;
+            margin-top: 8px;
         }
 
         .contact-info {
             display: flex;
             flex-direction: column;
-            gap: 15px;
+            gap: 18px;
             z-index: 2;
         }
 
@@ -181,17 +188,19 @@
             display: flex;
             align-items: center;
             gap: 15px;
-            font-size: 14px;
+            font-size: 16px;
+            font-weight: 500;
         }
 
         .icon-box {
-            width: 20px;
+            width: 24px;
             display: flex;
             justify-content: center;
+            align-items: center;
         }
 
         .info-item i {
-            font-size: 16px;
+            font-size: 18px;
         }
         
         /* Print Settings */
@@ -199,13 +208,14 @@
             body {
                 background: none;
                 display: block;
+                padding: 0;
             }
             .card {
                 break-inside: avoid;
-                margin: 20px;
-                border: 1px solid #ddd; /* Light border for cutting guide */
+                margin: 20px auto; /* Center on paper */
+                border: none;
                 box-shadow: none;
-                float: left;
+                page-break-after: always; /* Force each card onto a new page/area */
             }
         }
     </style>
@@ -216,7 +226,7 @@
         <div class="wave-top"></div>
         
         <div class="img-container">
-            <img src="https://api.dicebear.com/7.x/avataaars/svg?hair=shaggy&hairColor=2c1b18&clotheType=collarSweater&clotheColor=262626&skinColor=f8d25c&topType=longHair" alt="Anime Character" class="profile-img">
+            <img src="image_1.png" alt="Anime Character" class="profile-img">
         </div>
 
         <div class="wave-bottom"></div>
