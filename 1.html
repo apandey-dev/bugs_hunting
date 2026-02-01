@@ -3,426 +3,330 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Vertical Business Card Generator</title>
+    <title>Smart Vertical Visiting Card</title>
     
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
-    
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --primary-blue: #548CFF; /* Soft Blue from image */
-            --dark-blue: #3a6bc0;
-            --text-dark: #333;
-            --white: #ffffff;
-            --card-width: 320px; /* On screen size */
-            --card-height: 560px; /* Aspect ratio roughly 2:3.5 */
+            --primary: #4a90e2;
+            --accent: #dbeafe;
+            --text-main: #2c3e50;
+            --card-w: 320px;
+            --card-h: 560px; /* Vertical Ratio */
         }
 
         * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Fredoka', sans-serif; background: #eaeff2; display: flex; justify-content: center; min-height: 100vh; padding: 20px; }
 
-        body {
-            font-family: 'Fredoka', sans-serif;
-            background-color: #f4f7f6;
+        .main-layout {
             display: flex;
-            min-height: 100vh;
-            color: var(--text-dark);
-        }
-
-        /* --- Layout --- */
-        .container {
-            display: flex;
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 40px;
-            gap: 50px;
-            align-items: flex-start;
-        }
-
-        /* --- Form Section --- */
-        .editor-panel {
-            flex: 1;
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
-        }
-
-        .editor-panel h2 { margin-bottom: 20px; color: var(--primary-blue); }
-
-        .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; margin-bottom: 5px; font-weight: 600; font-size: 0.9rem; }
-        .form-group input, .form-group textarea {
-            width: 100%;
-            padding: 12px;
-            border: 2px solid #eee;
-            border-radius: 8px;
-            font-family: 'Kalam', cursive;
-            font-size: 1rem;
-            transition: border-color 0.3s;
-        }
-        .form-group input:focus { border-color: var(--primary-blue); outline: none; }
-
-        .actions { display: flex; gap: 10px; margin-top: 20px; }
-        .btn {
-            padding: 12px 20px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-family: 'Fredoka', sans-serif;
-            transition: transform 0.2s, background 0.2s;
-            flex: 1;
-        }
-        .btn-primary { background: var(--primary-blue); color: white; }
-        .btn-secondary { background: #333; color: white; }
-        .btn:hover { transform: translateY(-2px); opacity: 0.9; }
-
-        /* --- Card Preview Section --- */
-        .preview-panel {
-            flex: 1;
-            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
             justify-content: center;
-            align-items: center;
-            perspective: 1200px; /* For 3D Flip */
+            width: 100%;
+            max-width: 1100px;
         }
 
-        .card-wrapper {
-            width: var(--card-width);
-            height: var(--card-height);
+        /* --- Input Section --- */
+        .controls {
+            flex: 1;
+            min-width: 300px;
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            height: fit-content;
+        }
+        .controls h2 { color: var(--primary); margin-bottom: 20px; }
+        
+        .input-group { margin-bottom: 15px; }
+        .input-group label { display: block; font-size: 0.85rem; color: #666; margin-bottom: 5px; font-weight: bold; }
+        .input-group input { 
+            width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 6px; 
+            font-family: 'Kalam', cursive; font-size: 1rem;
+        }
+        .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+        button {
+            flex: 1; padding: 12px; border: none; border-radius: 6px; cursor: pointer; font-weight: bold; transition: 0.2s;
+        }
+        .btn-flip { background: var(--primary); color: white; }
+        .btn-print { background: #333; color: white; }
+        button:hover { opacity: 0.9; }
+
+        /* --- Card Container --- */
+        .card-perspective {
+            perspective: 1000px;
+            width: var(--card-w);
+            height: var(--card-h);
+        }
+
+        .card-inner {
+            width: 100%;
+            height: 100%;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 20px 50px rgba(0,0,0,0.15);
-            border-radius: 20px; /* Visual only, print overrides this */
+            transition: transform 0.6s;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            border-radius: 20px;
         }
 
-        .card-wrapper.flipped {
-            transform: rotateY(180deg);
-        }
+        .card-inner.flipped { transform: rotateY(180deg); }
 
         .card-face {
             position: absolute;
             width: 100%;
             height: 100%;
-            backface-visibility: hidden; /* Hides back when flipped */
+            backface-visibility: hidden;
             border-radius: 20px;
             overflow: hidden;
             background: white;
         }
 
-        /* --- Front Side Design --- */
-        .card-front {
+        /* --- FRONT DESIGN --- */
+        .front {
             background: white;
+            display: flex;
+            flex-direction: column;
             position: relative;
         }
 
-        /* Decorative Waves */
-        .wave-top {
+        /* Background Shapes */
+        .shape-blob {
             position: absolute;
-            top: -50px;
-            left: -50px;
-            width: 150%;
-            height: 200px;
-            background: rgba(84, 140, 255, 0.15);
+            background: var(--accent);
             border-radius: 50%;
-            transform: rotate(-10deg);
             z-index: 1;
         }
-        
-        .wave-middle {
-            position: absolute;
-            top: 20%;
-            right: -60%;
-            width: 150%;
-            height: 300px;
-            background: rgba(84, 140, 255, 0.1);
-            border-radius: 50%;
-            transform: rotate(25deg);
-            z-index: 1;
-        }
+        .blob-1 { top: -60px; left: -60px; width: 250px; height: 250px; }
+        .blob-2 { top: 30%; right: -50px; width: 150px; height: 150px; opacity: 0.6; }
 
-        /* Avatar */
-        .avatar-container {
+        /* Smart Vertical Text */
+        .name-container {
             position: absolute;
-            bottom: 0;
-            left: -20px;
-            width: 85%;
-            z-index: 2;
-        }
-        .avatar-img {
-            width: 100%;
-            display: block;
-            filter: drop-shadow(5px 5px 15px rgba(0,0,0,0.2));
-        }
-
-        /* Vertical Big Text (GONG YOO Style) */
-        .vertical-name {
-            position: absolute;
-            top: 50%;
+            top: 20px;
             right: 20px;
-            transform: translateY(-50%);
+            height: 90%;
             display: flex;
-            flex-direction: column;
+            flex-direction: column; /* Stack words vertically */
             align-items: center;
-            z-index: 3;
+            justify-content: center;
+            z-index: 10;
+            pointer-events: none; /* Let clicks pass through */
         }
 
-        .v-text {
+        .vertical-word {
             writing-mode: vertical-rl;
             text-orientation: upright;
-            font-size: 3.8rem;
             font-weight: 800;
-            line-height: 0.9;
             text-transform: uppercase;
-            letter-spacing: -5px;
+            letter-spacing: -4px;
+            line-height: 0.85;
+            transition: font-size 0.3s ease; /* Smooth resizing */
         }
 
-        .v-text-1 {
-            color: var(--primary-blue);
-            text-shadow: 2px 2px 0px rgba(0,0,0,0.05);
+        .word-primary { color: var(--primary); }
+        .word-outline { 
+            color: transparent; 
+            -webkit-text-stroke: 2px var(--primary); 
+            margin-left: -15px; /* Overlap effect */
         }
-        
-        .v-text-2 {
-            color: transparent;
-            -webkit-text-stroke: 2px var(--primary-blue);
-            position: relative;
-            left: -10px; /* Overlap effect */
-        }
-        
-        /* Decoration Circle on Front */
-        .deco-circle {
+
+        /* Smart Image Area */
+        .image-area {
             position: absolute;
-            right: 45px;
-            bottom: 30%;
-            width: 60px;
-            height: 60px;
-            border: 3px solid white;
-            border-radius: 50%;
-            z-index: 4;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            bottom: 0;
+            left: 0;
+            width: 75%; /* Limit width so it doesn't hit text */
+            height: 65%; /* Limit height */
+            z-index: 5;
+            display: flex;
+            align-items: flex-end; /* Stick to bottom */
         }
 
+        .user-photo {
+            width: 100%;
+            height: 100%;
+            object-fit: contain; /* Ensures image scales without cropping awkward parts */
+            object-position: bottom left; /* Anchors image to corner */
+            filter: drop-shadow(5px 5px 10px rgba(0,0,0,0.15));
+        }
 
-        /* --- Back Side Design --- */
-        .card-back {
-            background: var(--primary-blue);
+        /* Decoration */
+        .circle-deco {
+            position: absolute;
+            bottom: 35%;
+            right: 25%;
+            width: 50px;
+            height: 50px;
+            border: 4px solid #fff;
+            border-radius: 50%;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            z-index: 6;
+        }
+
+        /* --- BACK DESIGN --- */
+        .back {
+            background: var(--primary);
             color: white;
             transform: rotateY(180deg);
+            padding: 40px 30px;
             display: flex;
             flex-direction: column;
-            padding: 40px;
-            position: relative;
+            justify-content: center;
         }
 
-        /* Back Waves */
-        .back-wave-top {
-            position: absolute;
-            top: -20px;
-            right: -20px;
-            width: 200px;
-            height: 200px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 50%;
-            z-index: 0;
-        }
-        .back-wave-bottom {
-            position: absolute;
-            bottom: -50px;
-            left: -20px;
-            width: 100%;
-            height: 150px;
-            background: rgba(255,255,255,0.15);
-            border-radius: 100% 100% 0 0;
-            z-index: 0;
-        }
-
-        .back-content { z-index: 2; height: 100%; display: flex; flex-direction: column; }
-
-        .back-header { margin-bottom: 40px; }
-        .back-name {
-            font-size: 2.5rem;
-            font-weight: 700;
-            text-transform: uppercase;
+        .back-header h1 {
+            font-size: 2.2rem;
             line-height: 1;
             margin-bottom: 5px;
+            text-transform: uppercase;
         }
-        .back-profession {
+        .back-header p {
             font-family: 'Kalam', cursive;
             font-size: 1.2rem;
             opacity: 0.9;
-            font-weight: 300;
+            margin-bottom: 40px;
         }
 
-        .contact-list {
-            margin-top: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .contact-item {
+        .contact-row {
             display: flex;
             align-items: center;
-            gap: 15px;
-            font-size: 0.9rem;
-            font-family: 'Fredoka', sans-serif;
-            font-weight: 400;
+            margin-bottom: 18px;
+            font-size: 0.95rem;
+        }
+        .icon-box {
+            width: 35px;
+            height: 35px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            flex-shrink: 0;
         }
 
-        .contact-item i {
-            font-size: 1.1rem;
-            width: 20px;
-            text-align: center;
-        }
-
-        /* --- Responsive --- */
-        @media (max-width: 800px) {
-            .container { flex-direction: column; padding: 20px; }
-            .card-wrapper { transform: scale(0.9); }
-        }
-
-        /* --- PRINT CSS (Critical) --- */
+        /* --- PRINT SETTINGS --- */
         @media print {
-            body { background: white; -webkit-print-color-adjust: exact; }
-            .editor-panel, .actions, h2 { display: none !important; }
-            .container { display: block; padding: 0; margin: 0; width: auto; max-width: none; }
-            .preview-panel { display: block; perspective: none; }
-            
-            /* Reset Layout for Print */
-            .card-wrapper {
-                box-shadow: none;
-                transition: none;
-                transform: none !important; /* Disable Flip */
-                position: relative;
-                
-                /* Standard Business Card Size (Vertical) */
-                width: 2in; 
-                height: 3.5in;
-                margin: 0;
-                display: flex; /* Trick to show elements */
-                flex-wrap: wrap;
-                gap: 20px;
+            body { background: white; padding: 0; margin: 0; }
+            .controls, .btn-row { display: none !important; }
+            .main-layout { display: block; }
+            .card-perspective { perspective: none; width: auto; height: auto; }
+            .card-inner { 
+                transform: none !important; 
+                box-shadow: none; 
+                display: flex; 
+                gap: 20px; 
             }
-
-            /* Show Both Sides */
             .card-face {
                 position: relative;
-                width: 2in;
-                height: 3.5in;
-                border: 1px solid #ddd; /* Cutting guide */
-                border-radius: 0; /* Sharp edges for print */
+                width: 2.2in; /* Print Width */
+                height: 3.7in; /* Print Height */
+                border: 1px dotted #ccc;
                 page-break-inside: avoid;
-                top: auto; left: auto;
-                backface-visibility: visible;
-                transform: none !important;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
                 float: left;
-                margin-right: 20px;
-                margin-bottom: 20px;
+                transform: none !important;
+                backface-visibility: visible !important;
             }
+            /* Zoom trick for print scale */
+            .front, .back { zoom: 0.7; }
+        }
 
-            /* Adjust internal scaling for print size */
-            /* Since we designed for 320px screen width but printing at 2in (approx 192px at 96dpi), 
-               we need to scale the contents to fit the physical inch dimensions. 
-               Using zoom is the easiest hack for mixed unit printing. */
-            .card-face {
-                zoom: 0.6; /* Scale down pixel design to inch design */
-            }
+        /* Responsive */
+        @media (max-width: 700px) {
+            .main-layout { flex-direction: column; align-items: center; }
         }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="editor-panel">
-        <h2>Card Details</h2>
-        <div class="form-group">
-            <label>Upload Avatar (Transparent PNG recommended)</label>
-            <input type="file" id="imgInput" accept="image/*">
+<div class="main-layout">
+    
+    <div class="controls">
+        <h2><i class="fas fa-edit"></i> Edit Details</h2>
+        
+        <div class="input-group">
+            <label>Upload Photo (Transparent PNG best)</label>
+            <input type="file" id="imgInp" accept="image/*">
         </div>
-        <div class="form-group">
-            <label>Full Name</label>
-            <input type="text" id="nameInput" value="Gong Yoo" placeholder="e.g. Gong Yoo">
+        
+        <div class="input-group">
+            <label>First Name</label>
+            <input type="text" id="fName" value="Arpit" oninput="updateCard()">
         </div>
-        <div class="form-group">
+        <div class="input-group">
+            <label>Last Name</label>
+            <input type="text" id="lName" value="Pandey" oninput="updateCard()">
+        </div>
+        <div class="input-group">
             <label>Profession</label>
-            <input type="text" id="roleInput" value="Actor & Model" placeholder="e.g. Actor">
+            <input type="text" id="role" value="Frontend Developer" oninput="updateCard()">
         </div>
-        <div class="form-group">
+        
+        <hr style="margin: 15px 0; border: 0; border-top: 1px solid #eee;">
+        
+        <div class="input-group">
             <label>Phone</label>
-            <input type="text" id="phoneInput" value="+82 10-1234-5678">
+            <input type="text" id="phone" value="+91 98765 43210" oninput="updateCard()">
         </div>
-        <div class="form-group">
+        <div class="input-group">
             <label>Email</label>
-            <input type="email" id="emailInput" value="management@soop.com">
+            <input type="text" id="email" value="arpit.pandey@email.com" oninput="updateCard()">
         </div>
-        <div class="form-group">
+        <div class="input-group">
             <label>Address</label>
-            <input type="text" id="addressInput" value="Gangnam-gu, Seoul, Korea">
-        </div>
-        <div class="form-group">
-            <label>Website</label>
-            <input type="text" id="webInput" value="www.msoopent.com">
+            <input type="text" id="addr" value="Indirapuram, Ghaziabad" oninput="updateCard()">
         </div>
 
-        <div class="actions">
-            <button class="btn btn-primary" onclick="toggleFlip()">Flip Card <i class="fas fa-sync-alt"></i></button>
-            <button class="btn btn-secondary" onclick="window.print()">Print Card <i class="fas fa-print"></i></button>
+        <div class="btn-row">
+            <button class="btn-flip" onclick="flipCard()">Flip View <i class="fas fa-sync"></i></button>
+            <button class="btn-print" onclick="window.print()">Print <i class="fas fa-print"></i></button>
         </div>
     </div>
 
-    <div class="preview-panel">
-        <div class="card-wrapper" id="card">
+    <div class="card-perspective">
+        <div class="card-inner" id="cardInner">
             
-            <div class="card-face card-front">
-                <div class="wave-top"></div>
-                <div class="wave-middle"></div>
-                
-                <div class="vertical-name" id="frontNameContainer">
-                    <span class="v-text v-text-1">GONG</span>
-                    <span class="v-text v-text-2">YOO</span>
+            <div class="card-face front">
+                <div class="shape-blob blob-1"></div>
+                <div class="shape-blob blob-2"></div>
+
+                <div class="name-container">
+                    <span class="vertical-word word-primary" id="dispFName">ARPIT</span>
+                    <span class="vertical-word word-outline" id="dispLName">PANDEY</span>
                 </div>
 
-                <div class="deco-circle"></div>
+                <div class="circle-deco"></div>
 
-                <div class="avatar-container">
-                    <img src="https://api.dicebear.com/7.x/avataaars/svg?seed=Felix&clothing=blazerAndShirt&top=shortHairTheCaesar&hairColor=black&skinColor=light" class="avatar-img" id="avatarDisplay" alt="Avatar">
+                <div class="image-area">
+                    <img src="" id="dispImg" class="user-photo" alt="User">
                 </div>
             </div>
 
-            <div class="card-face card-back">
-                <div class="back-wave-top"></div>
-                
-                <div class="back-content">
-                    <div class="back-header">
-                        <div class="back-name" id="backName">GONG <br> YOO</div>
-                        <div class="back-profession" id="backRole">Actor</div>
-                    </div>
-
-                    <div class="contact-list">
-                        <div class="contact-item">
-                            <i class="fas fa-phone-alt"></i>
-                            <span id="backPhone">+82 10-1234-5678</span>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span id="backAddress">Gangnam-gu, Seoul</span>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fas fa-envelope"></i>
-                            <span id="backEmail">info@email.com</span>
-                        </div>
-                        <div class="contact-item">
-                            <i class="fas fa-globe"></i>
-                            <span id="backWeb">www.website.com</span>
-                        </div>
-                    </div>
+            <div class="card-face back">
+                <div class="back-header">
+                    <h1 id="backName">ARPIT<br>PANDEY</h1>
+                    <p id="backRole">Frontend Developer</p>
                 </div>
 
-                <div class="back-wave-bottom"></div>
+                <div class="contact-list">
+                    <div class="contact-row">
+                        <div class="icon-box"><i class="fas fa-phone"></i></div>
+                        <span id="backPhone">+91 98765 43210</span>
+                    </div>
+                    <div class="contact-row">
+                        <div class="icon-box"><i class="fas fa-envelope"></i></div>
+                        <span id="backEmail">arpit.pandey@email.com</span>
+                    </div>
+                    <div class="contact-row">
+                        <div class="icon-box"><i class="fas fa-map-marker-alt"></i></div>
+                        <span id="backAddr">Indirapuram, Ghaziabad</span>
+                    </div>
+                </div>
             </div>
 
         </div>
@@ -430,74 +334,61 @@
 </div>
 
 <script>
-    // --- Live Update Logic ---
-    const inputs = {
-        name: document.getElementById('nameInput'),
-        role: document.getElementById('roleInput'),
-        phone: document.getElementById('phoneInput'),
-        email: document.getElementById('emailInput'),
-        address: document.getElementById('addressInput'),
-        web: document.getElementById('webInput'),
-        img: document.getElementById('imgInput')
-    };
+    // --- Default Image (Cartoon Avatar) ---
+    const defaultAvatar = "https://api.dicebear.com/7.x/avataaars/svg?seed=Arpit&clothing=blazerAndShirt&hairColor=black&skinColor=light";
+    document.getElementById('dispImg').src = defaultAvatar;
 
-    const outputs = {
-        frontContainer: document.getElementById('frontNameContainer'),
-        backName: document.getElementById('backName'),
-        backRole: document.getElementById('backRole'),
-        backPhone: document.getElementById('backPhone'),
-        backEmail: document.getElementById('backEmail'),
-        backAddress: document.getElementById('backAddress'),
-        backWeb: document.getElementById('backWeb'),
-        avatar: document.getElementById('avatarDisplay')
-    };
-
-    // Update Text Fields
+    // --- Dynamic Resizing Logic ---
     function updateCard() {
-        // Back side updates are simple
-        outputs.backName.innerHTML = inputs.name.value.replace(' ', '<br>');
-        outputs.backRole.textContent = inputs.role.value;
-        outputs.backPhone.textContent = inputs.phone.value;
-        outputs.backEmail.textContent = inputs.email.value;
-        outputs.backAddress.textContent = inputs.address.value;
-        outputs.backWeb.textContent = inputs.web.value;
+        const fName = document.getElementById('fName').value.toUpperCase();
+        const lName = document.getElementById('lName').value.toUpperCase();
+        
+        // Update Text
+        const dispFName = document.getElementById('dispFName');
+        const dispLName = document.getElementById('dispLName');
+        
+        dispFName.innerText = fName;
+        dispLName.innerText = lName;
 
-        // Front Side Logic: Split name for the stylish effect
-        const fullName = inputs.name.value.trim().split(' ');
-        let html = '';
-        if (fullName.length > 0) {
-            // First part (Solid Color)
-            html += `<span class="v-text v-text-1">${fullName[0]}</span>`;
-        }
-        if (fullName.length > 1) {
-            // Remaining parts (Outlined)
-            html += `<span class="v-text v-text-2">${fullName.slice(1).join(' ')}</span>`;
-        }
-        outputs.frontContainer.innerHTML = html;
+        // Smart Font Sizing (The longer the name, the smaller the font)
+        // Base size 4rem, reduce based on character count
+        const maxChars = Math.max(fName.length, lName.length);
+        let newSize = 4.5; // Default big size
+        
+        if (maxChars > 6) newSize = 3.5;
+        if (maxChars > 9) newSize = 2.8;
+        if (maxChars > 12) newSize = 2.2;
+
+        dispFName.style.fontSize = newSize + 'rem';
+        dispLName.style.fontSize = newSize + 'rem';
+
+        // Update Back Side
+        document.getElementById('backName').innerHTML = fName + "<br>" + lName;
+        document.getElementById('backRole').innerText = document.getElementById('role').value;
+        document.getElementById('backPhone').innerText = document.getElementById('phone').value;
+        document.getElementById('backEmail').innerText = document.getElementById('email').value;
+        document.getElementById('backAddr').innerText = document.getElementById('addr').value;
     }
-
-    // Attach Event Listeners to all text inputs
-    Object.values(inputs).forEach(input => {
-        if(input.type === 'text' || input.type === 'email') {
-            input.addEventListener('input', updateCard);
-        }
-    });
 
     // --- Image Upload Logic ---
-    inputs.img.addEventListener('change', function(e) {
-        if (e.target.files && e.target.files[0]) {
+    document.getElementById('imgInp').addEventListener('change', function(event) {
+        const file = event.target.files[0];
+        if (file) {
             const reader = new FileReader();
             reader.onload = function(e) {
-                outputs.avatar.src = e.target.result;
+                document.getElementById('dispImg').src = e.target.result;
             }
-            reader.readAsDataURL(e.target.files[0]);
+            reader.readAsDataURL(file);
         }
     });
 
-    // --- Flip Logic ---
-    function toggleFlip() {
-        document.getElementById('card').classList.toggle('flipped');
+    // --- Flip Animation ---
+    function flipCard() {
+        document.getElementById('cardInner').classList.toggle('flipped');
     }
+
+    // Initial run to set fonts
+    updateCard();
 </script>
 
 </body>
